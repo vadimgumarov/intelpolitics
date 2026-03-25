@@ -1,6 +1,6 @@
 # IntelPolitics - Political Accountability Platform
 
-> Political transparency and accountability intelligence platform with politician dossiers, truthfulness tracking, and comparison tools.
+> Political transparency and accountability intelligence platform with politician dossiers, truthfulness tracking, and comparison tools. Lithuanian language (lt).
 
 ## Stack
 
@@ -9,14 +9,17 @@
 | Framework | Next.js 16 (App Router) |
 | Styling | Tailwind CSS v4 |
 | Language | TypeScript |
-| Font | Inter |
-| Design | Dark mode, intelligence/detective aesthetic, amber accent |
+| Headlines Font | Space Grotesk |
+| Body Font | Inter |
+| Design | "The Digital Panopticon" — technical brutalism, detective board logic |
+| Language | Lithuanian (lt) with proper diacritics |
 
 ## Stitch AI
 
 - **Project ID:** 10136364126927908746
-- **Screens:** 19 (mobile + desktop)
-- **Design theme:** Dark mode, Inter body, amber accent (#d4a843)
+- **Screens:** 19 (8 desktop + 11 mobile)
+- **Design theme:** "The Digital Panopticon" — Midnight spectrum, #A7C8FF primary, #FF544E crimson alert
+- **Design reference:** `design.md` in repo root
 
 ## Commands
 

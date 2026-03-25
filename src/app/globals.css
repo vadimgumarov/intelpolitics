@@ -1,32 +1,150 @@
 @import "tailwindcss";
 
-:root {
-  --background: #0a0a0a;
-  --foreground: #ededed;
-  --surface: #111111;
-  --surface-elevated: #1a1a1a;
-  --accent: #d4a843;
-  --accent-hover: #e0b854;
-  --text-primary: #ffffff;
-  --text-secondary: #a0a0a0;
-  --text-muted: #666666;
+@theme inline {
+  /* Surface Hierarchy */
+  --color-surface: #111417;
+  --color-surface-dim: #111417;
+  --color-surface-container-lowest: #0b0f11;
+  --color-surface-container-low: #191c1f;
+  --color-surface-container: #1d2023;
+  --color-surface-container-high: #272a2d;
+  --color-surface-container-highest: #323538;
+  --color-surface-bright: #37393d;
+  --color-surface-variant: #323538;
+  --color-background: #111417;
+
+  /* Primary */
+  --color-primary: #a7c8ff;
+  --color-primary-container: #4491f4;
+  --color-primary-fixed: #d5e3ff;
+  --color-primary-fixed-dim: #a7c8ff;
+  --color-on-primary: #003061;
+  --color-on-primary-container: #002a55;
+  --color-on-primary-fixed: #001b3c;
+  --color-on-primary-fixed-variant: #004689;
+  --color-inverse-primary: #005eb3;
+
+  /* Secondary */
+  --color-secondary: #c6c6c6;
+  --color-secondary-container: #454747;
+  --color-secondary-fixed: #e2e2e2;
+  --color-secondary-fixed-dim: #c6c6c6;
+  --color-on-secondary: #2f3131;
+  --color-on-secondary-container: #b5b5b5;
+  --color-on-secondary-fixed: #1a1c1c;
+  --color-on-secondary-fixed-variant: #454747;
+
+  /* Tertiary (Crimson) */
+  --color-tertiary: #ffb3ad;
+  --color-tertiary-container: #ff544e;
+  --color-tertiary-fixed: #ffdad6;
+  --color-tertiary-fixed-dim: #ffb3ad;
+  --color-on-tertiary: #680008;
+  --color-on-tertiary-container: #5c0006;
+  --color-on-tertiary-fixed: #410003;
+  --color-on-tertiary-fixed-variant: #930010;
+
+  /* Error */
+  --color-error: #ffb4ab;
+  --color-error-container: #93000a;
+  --color-on-error: #690005;
+  --color-on-error-container: #ffdad6;
+
+  /* Outline */
+  --color-outline: #8b919e;
+  --color-outline-variant: #414752;
+
+  /* On-Surface */
+  --color-on-surface: #e1e2e6;
+  --color-on-surface-variant: #c1c6d5;
+  --color-on-background: #e1e2e6;
+
+  /* Inverse */
+  --color-inverse-surface: #e1e2e6;
+  --color-inverse-on-surface: #2e3134;
+
+  /* Surface Tint */
+  --color-surface-tint: #a7c8ff;
+
+  /* Font families */
+  --font-headline: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  --font-body: var(--font-inter), "Inter", sans-serif;
+  --font-label: var(--font-inter), "Inter", sans-serif;
+
+  /* Border radius — 0px everywhere */
+  --radius: 0px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-3xl: 0px;
+  --radius-4xl: 0px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-surface: var(--surface);
-  --color-surface-elevated: var(--surface-elevated);
-  --color-accent: var(--accent);
-  --color-accent-hover: var(--accent-hover);
-  --color-text-primary: var(--text-primary);
-  --color-text-secondary: var(--text-secondary);
-  --color-text-muted: var(--text-muted);
-  --font-sans: var(--font-inter);
+/* Material Symbols */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: #111417;
+}
+::-webkit-scrollbar-thumb {
+  background: #414752;
+}
+
+/* Detective board animated flow lines */
+@keyframes dash-scroll {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+.flow-line {
+  stroke-dasharray: 4 4;
+  animation: dash-scroll 2s linear infinite;
+}
+.flow-line-static {
+  stroke-dasharray: 2 6;
+}
+
+/* Truthfulness Rose grid background */
+.truth-rose-grid {
+  background-image: radial-gradient(circle, #414752 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Truthfulness rose ambient glow */
+.truthfulness-rose-bg {
+  background: radial-gradient(circle at center, rgba(68, 145, 244, 0.05) 0%, transparent 70%);
+}
+
+/* Ghost border utility */
+.ghost-border {
+  background-color: #414752;
+  opacity: 0.15;
+}
+
+/* Glassmorphism for floating elements */
+.glass {
+  background: rgba(50, 53, 56, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* Selection styling */
+::selection {
+  background: rgba(68, 145, 244, 0.3);
+  color: #e1e2e6;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  background: #111417;
+  color: #e1e2e6;
+  font-family: var(--font-body), "Inter", sans-serif;
 }

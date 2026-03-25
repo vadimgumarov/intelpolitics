@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Intelligence Protocol - Dossier</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "outline": "#8b919e",
+                        "on-surface": "#e1e2e6",
+                        "error": "#ffb4ab",
+                        "surface-dim": "#111417",
+                        "on-primary-fixed-variant": "#004689",
+                        "on-primary-fixed": "#001b3c",
+                        "secondary": "#c6c6c6",
+                        "surface-variant": "#323538",
+                        "surface-tint": "#a7c8ff",
+                        "on-secondary": "#2f3131",
+                        "on-error-container": "#ffdad6",
+                        "on-secondary-container": "#b5b5b5",
+                        "tertiary-container": "#ff544e",
+                        "inverse-surface": "#e1e2e6",
+                        "background": "#111417",
+                        "primary-container": "#4491f4",
+                        "surface-bright": "#37393d",
+                        "on-background": "#e1e2e6",
+                        "inverse-on-surface": "#2e3134",
+                        "surface-container-highest": "#323538",
+                        "surface": "#111417",
+                        "outline-variant": "#414752",
+                        "inverse-primary": "#005eb3",
+                        "surface-container": "#1d2023",
+                        "tertiary-fixed": "#ffdad6",
+                        "on-tertiary-fixed": "#410003",
+                        "on-tertiary-fixed-variant": "#930010",
+                        "surface-container-low": "#191c1f",
+                        "secondary-container": "#454747",
+                        "on-surface-variant": "#c1c6d5",
+                        "on-secondary-fixed": "#1a1c1c",
+                        "on-error": "#690005",
+                        "tertiary-fixed-dim": "#ffb3ad",
+                        "error-container": "#93000a",
+                        "tertiary": "#ffb3ad",
+                        "on-primary": "#003061",
+                        "surface-container-lowest": "#0b0f11",
+                        "surface-container-high": "#272a2d",
+                        "on-secondary-fixed-variant": "#454747",
+                        "primary-fixed": "#d5e3ff",
+                        "secondary-fixed-dim": "#c6c6c6",
+                        "on-tertiary-container": "#5c0006",
+                        "on-tertiary": "#680008",
+                        "primary-fixed-dim": "#a7c8ff",
+                        "secondary-fixed": "#e2e2e2",
+                        "on-primary-container": "#002a55",
+                        "primary": "#a7c8ff"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0px", "lg": "0px", "xl": "0px", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .truth-rose-grid {
+            background-image: radial-gradient(circle, #414752 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        @keyframes dash-scroll {
+            to {
+                stroke-dashoffset: -20;
+            }
+        }
+        .flow-line {
+            stroke-dasharray: 4 4;
+            animation: dash-scroll 2s linear infinite;
+        }
+        .flow-line-static {
+            stroke-dasharray: 2 6;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary selection:text-on-primary">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 h-14 bg-[#111417] border-b border-[#414752]/15">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tighter text-[#A7C8FF] font-headline">INTELLIGENCE PROTOCOL</span>
+<nav class="hidden md:flex gap-6 h-full items-center">
+<a class="font-headline tracking-tight text-sm uppercase text-[#C1C6D5] hover:bg-[#37393D] transition-colors duration-150 px-3 py-1" href="#">System</a>
+<a class="font-headline tracking-tight text-sm uppercase text-[#A7C8FF] border-b-2 border-[#A7C8FF] px-3 py-1" href="#">Dossiers</a>
+<a class="font-headline tracking-tight text-sm uppercase text-[#C1C6D5] hover:bg-[#37393D] transition-colors duration-150 px-3 py-1" href="#">Archive</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="bg-[#191C1F] px-3 py-1 flex items-center gap-2 border-b border-[#414752]/30">
+<span class="material-symbols-outlined text-[#A7C8FF] text-sm">search</span>
+<input class="bg-transparent border-none text-xs font-label uppercase tracking-widest focus:ring-0 text-[#A7C8FF] placeholder-[#414752] w-48" placeholder="QUERY_DATABASE..." type="text"/>
+</div>
+<div class="flex gap-2">
+<button class="p-2 text-[#C1C6D5] hover:bg-[#37393D] transition-colors duration-150"><span class="material-symbols-outlined">sensors</span></button>
+<button class="p-2 text-[#C1C6D5] hover:bg-[#37393D] transition-colors duration-150"><span class="material-symbols-outlined">security</span></button>
+<button class="p-2 text-[#C1C6D5] hover:bg-[#37393D] transition-colors duration-150"><span class="material-symbols-outlined">notifications</span></button>
+<button class="p-2 text-[#C1C6D5] hover:bg-[#37393D] transition-colors duration-150"><span class="material-symbols-outlined">account_circle</span></button>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-14 h-[calc(100vh-3.5rem)] w-64 bg-[#191C1F] border-r border-[#414752]/15 flex flex-col pt-4 pb-6 z-40">
+<div class="px-6 mb-8">
+<div class="text-[10px] font-bold uppercase tracking-[0.2rem] text-[#A7C8FF]/50 mb-1">Authorization</div>
+<div class="font-headline text-sm font-bold text-[#A7C8FF]">SYSTEM_OPERATOR</div>
+<div class="text-[9px] font-label text-[#C1C6D5]/40 tracking-tighter uppercase">LEVEL_04_CLEARANCE</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="text-[#C1C6D5]/60 flex items-center px-6 py-3 font-label text-[11px] font-bold uppercase tracking-[0.05rem] hover:bg-[#272A2D] hover:text-[#A7C8FF] transition-all duration-200" href="#">
+<span class="material-symbols-outlined mr-4">grid_view</span> Hub
+        </a>
+<a class="text-[#A7C8FF] bg-[#272A2D] border-l-4 border-[#A7C8FF] flex items-center px-6 py-3 font-label text-[11px] font-bold uppercase tracking-[0.05rem]" href="#">
+<span class="material-symbols-outlined mr-4">folder_shared</span> Dossiers
+        </a>
+<a class="text-[#C1C6D5]/60 flex items-center px-6 py-3 font-label text-[11px] font-bold uppercase tracking-[0.05rem] hover:bg-[#272A2D] hover:text-[#A7C8FF] transition-all duration-200" href="#">
+<span class="material-symbols-outlined mr-4">analytics</span> Intel
+        </a>
+<a class="text-[#C1C6D5]/60 flex items-center px-6 py-3 font-label text-[11px] font-bold uppercase tracking-[0.05rem] hover:bg-[#272A2D] hover:text-[#A7C8FF] transition-all duration-200" href="#">
+<span class="material-symbols-outlined mr-4">compare_arrows</span> Compare
+        </a>
+</nav>
+<div class="mt-auto border-t border-[#414752]/15 pt-4">
+<a class="text-[#C1C6D5]/60 flex items-center px-6 py-3 font-label text-[11px] font-bold uppercase tracking-[0.05rem] hover:bg-[#272A2D] hover:text-[#A7C8FF]" href="#">
+<span class="material-symbols-outlined mr-4">settings</span> Settings
+        </a>
+<a class="text-[#C1C6D5]/60 flex items-center px-6 py-3 font-label text-[11px] font-bold uppercase tracking-[0.05rem] hover:bg-[#272A2D] hover:text-[#A7C8FF]" href="#">
+<span class="material-symbols-outlined mr-4">terminal</span> Terminal
+        </a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 mt-14 p-8 min-h-screen bg-[#111417]">
+<!-- Page Header -->
+<div class="flex items-end justify-between mb-12 border-b border-[#414752]/15 pb-4">
+<div>
+<div class="flex items-center gap-3 mb-2">
+<span class="bg-primary text-on-primary text-[10px] font-bold px-2 py-0.5 uppercase tracking-widest">Target_Active</span>
+<span class="text-on-surface-variant text-[10px] font-label uppercase tracking-widest">ID: 4491-F4-PROTOCOL</span>
+</div>
+<h1 class="text-5xl font-headline font-bold text-on-surface tracking-tighter">ALEXANDER_VANCE.EXE</h1>
+</div>
+<div class="flex gap-4">
+<button class="bg-surface-bright text-on-surface px-6 py-2 font-label text-xs font-bold uppercase tracking-widest hover:bg-primary-container transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">download</span> Export_Dossier
+            </button>
+</div>
+</div>
+<!-- Detective Board Layout -->
+<div class="grid grid-cols-12 gap-8">
+<!-- Left Column: Profile & Truthfulness Rose -->
+<div class="col-span-3 space-y-8">
+<!-- Profile Image Card -->
+<div class="bg-surface-container-low p-6 border-l border-primary/30 relative">
+<div class="absolute -left-[1px] top-0 h-8 w-[2px] bg-primary shadow-[0_0_12px_#A7C8FF]"></div>
+<img class="w-full grayscale contrast-125 mb-4 brightness-75" data-alt="Official portrait of a stern politician in a dark suit" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA097pqs-dptx0NkFlnc9wqpO1Zo0RTVPKJuxz1yoNHlRUUYVPgy-TJ5BveMTcuHYeK2QJP3vLf0spqQEYV3u9c7BTmuPNIKo6in1QcLTw4CesjL3-O5MjVr3ZlAXUESMVE-UkfrTtOkZZCnuJqfmulIZs8ONxxpQc7U-uhvIb1gJsRKeTj6wGrKC1aJOnWwBIgGf3g82zi9yoG7XpaYEKp9DUoKyaDKnI4aGSB7bmd4TQFHpQIUn7piXiMAKyI28sUwAbasPr0WMD4"/>
+<div class="space-y-4">
+<div>
+<div class="text-[10px] font-label uppercase text-on-surface-variant tracking-widest">Affiliation</div>
+<div class="text-sm font-bold text-primary uppercase">Unified_Front_Coalition</div>
+</div>
+<div>
+<div class="text-[10px] font-label uppercase text-on-surface-variant tracking-widest">Current_Role</div>
+<div class="text-sm font-bold text-on-surface uppercase tracking-tight">Lead_Strategic_Analyst</div>
+</div>
+<div class="pt-4 border-t border-outline-variant/15">
+<div class="flex justify-between items-center text-[10px] font-label uppercase text-on-surface-variant mb-1">
+<span>Threat_Level</span>
+<span class="text-tertiary">Critical</span>
+</div>
+<div class="h-1 w-full bg-surface-variant">
+<div class="h-full bg-tertiary-container w-[88%]"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Truthfulness Rose -->
+<div class="bg-surface-container-low p-6 h-[400px] flex flex-col">
+<h3 class="font-headline text-xs font-bold uppercase tracking-widest mb-8 flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-primary"></span> Integrity_Matrix
+                </h3>
+<div class="flex-1 relative truth-rose-grid flex items-center justify-center">
+<!-- Simulated Radar Chart SVG -->
+<svg class="w-48 h-48 drop-shadow-[0_0_8px_rgba(167,200,255,0.2)]" viewbox="0 0 100 100">
+<!-- Background Circles -->
+<circle cx="50" cy="50" fill="none" r="45" stroke="#414752" stroke-dasharray="2 2" stroke-width="0.5"></circle>
+<circle cx="50" cy="50" fill="none" r="30" stroke="#414752" stroke-dasharray="2 2" stroke-width="0.5"></circle>
+<circle cx="50" cy="50" fill="none" r="15" stroke="#414752" stroke-dasharray="2 2" stroke-width="0.5"></circle>
+<!-- Axis Lines -->
+<line stroke="#414752" stroke-width="0.5" x1="50" x2="50" y1="5" y2="95"></line>
+<line stroke="#414752" stroke-width="0.5" x1="5" x2="95" y1="50" y2="50"></line>
+<!-- Data Shape -->
+<polygon fill="rgba(68,145,244,0.2)" points="50,15 85,40 70,80 30,75 15,35" stroke="#A7C8FF" stroke-width="1"></polygon>
+<!-- Vertex Nodes -->
+<rect fill="#A7C8FF" height="4" width="4" x="48" y="13"></rect>
+<rect fill="#A7C8FF" height="4" width="4" x="83" y="38"></rect>
+<rect fill="#A7C8FF" height="4" width="4" x="68" y="78"></rect>
+<rect fill="#A7C8FF" height="4" width="4" x="28" y="73"></rect>
+<rect fill="#A7C8FF" height="4" width="4" x="13" y="33"></rect>
+</svg>
+<!-- Labels -->
+<span class="absolute top-2 text-[9px] font-bold uppercase text-on-surface-variant">Transparency</span>
+<span class="absolute right-0 text-[9px] font-bold uppercase text-on-surface-variant">Policy_Recall</span>
+<span class="absolute bottom-2 text-[9px] font-bold uppercase text-on-surface-variant">Public_Trust</span>
+<span class="absolute left-0 text-[9px] font-bold uppercase text-on-surface-variant">Consistency</span>
+</div>
+<div class="mt-4 text-[10px] text-on-surface-variant/60 font-label leading-tight">
+                    * DATA_SOURCE: VERIFIED_TRANSCRIPTS_0922-2024
+                </div>
+</div>
+</div>
+<!-- Middle Column: Influence Nexus -->
+<div class="col-span-6 space-y-8">
+<div class="bg-surface-container-low h-[832px] p-8 relative overflow-hidden">
+<!-- Title & Legend -->
+<div class="flex justify-between items-start mb-8 relative z-10">
+<div>
+<h3 class="font-headline text-lg font-bold tracking-tight uppercase">Influence_Nexus_v2.0</h3>
+<p class="text-[10px] font-label text-on-surface-variant tracking-widest">Tracing Financial &amp; Political Proxies</p>
+</div>
+<div class="flex gap-4">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="text-[9px] font-bold uppercase text-primary">Core_Node</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-outline-variant"></span>
+<span class="text-[9px] font-bold uppercase text-outline-variant">Industry_Proxy</span>
+</div>
+</div>
+</div>
+<!-- Detective Board Workspace (The Nodes) -->
+<div class="relative w-full h-[650px] border border-outline-variant/10">
+<!-- Background Schematic Grid -->
+<div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(#414752 1px, transparent 1px); background-size: 32px 32px;"></div>
+<!-- Connector Lines (SVG) -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none">
+<!-- Radial Lines from Lobbying Hub (Center 50,50) to Sectors -->
+<!-- Energy Sector (Top Left) -->
+<line class="flow-line" stroke="#A7C8FF" stroke-opacity="0.4" stroke-width="1.5" x1="50%" x2="25%" y1="50%" y2="25%"></line>
+<!-- Defense Contractors (Top Center) -->
+<line class="flow-line" stroke="#A7C8FF" stroke-opacity="0.4" stroke-width="1.5" x1="50%" x2="50%" y1="50%" y2="18%"></line>
+<!-- Financial Vanguard (Top Right) -->
+<line class="flow-line" stroke="#A7C8FF" stroke-opacity="0.4" stroke-width="1.5" x1="50%" x2="75%" y1="50%" y2="25%"></line>
+<!-- Target Connection (Alexander Vance) -->
+<line class="flow-line-static" stroke="#414752" stroke-width="1" x1="50%" x2="50%" y1="50%" y2="78%"></line>
+<!-- Lateral Proxies -->
+<line class="flow-line-static" stroke="#414752" stroke-width="1" x1="25%" x2="15%" y1="25%" y2="45%"></line>
+<line class="flow-line-static" stroke="#414752" stroke-width="1" x1="75%" x2="85%" y1="25%" y2="45%"></line>
+</svg>
+<!-- CENTRAL HUB: LOBBYING INFRASTRUCTURE -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
+<div class="w-24 h-24 bg-surface-container-high border-2 border-primary flex flex-col items-center justify-center group cursor-pointer hover:bg-primary/5 transition-all shadow-[0_0_30px_rgba(167,200,255,0.15)]">
+<span class="material-symbols-outlined text-primary text-4xl">account_balance</span>
+</div>
+<div class="mt-3 text-[11px] font-bold text-center uppercase text-primary tracking-[0.15em] whitespace-nowrap">LOBBYING_HUB</div>
+<div class="text-[8px] text-center text-on-surface-variant font-label uppercase">Central_Clearing</div>
+</div>
+<!-- BRANCH: ENERGY SECTOR -->
+<div class="absolute top-[25%] left-[25%] -translate-x-1/2 -translate-y-1/2">
+<div class="w-16 h-16 bg-surface-container border border-outline-variant flex items-center justify-center group cursor-pointer hover:border-primary transition-all">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary text-3xl">factory</span>
+</div>
+<div class="mt-2 text-[10px] font-bold text-center uppercase text-on-surface tracking-tight">ENERGY_SECTOR</div>
+<div class="text-[8px] text-center text-on-surface-variant/60 font-label">GRID_ALLOCATION</div>
+</div>
+<!-- BRANCH: DEFENSE CONTRACTORS -->
+<div class="absolute top-[18%] left-1/2 -translate-x-1/2 -translate-y-1/2">
+<div class="w-16 h-16 bg-surface-container border border-outline-variant flex items-center justify-center group cursor-pointer hover:border-primary transition-all">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary text-3xl">military_tech</span>
+</div>
+<div class="mt-2 text-[10px] font-bold text-center uppercase text-on-surface tracking-tight">DEFENSE_CONTRACTORS</div>
+<div class="text-[8px] text-center text-on-surface-variant/60 font-label">PROCUREMENT_V5</div>
+</div>
+<!-- BRANCH: FINANCIAL VANGUARD -->
+<div class="absolute top-[25%] left-[75%] -translate-x-1/2 -translate-y-1/2">
+<div class="w-16 h-16 bg-surface-container border border-outline-variant flex items-center justify-center group cursor-pointer hover:border-primary transition-all">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary text-3xl">monetization_on</span>
+</div>
+<div class="mt-2 text-[10px] font-bold text-center uppercase text-on-surface tracking-tight">FINANCIAL_VANGUARD</div>
+<div class="text-[8px] text-center text-on-surface-variant/60 font-label">ASSET_RESERVE</div>
+</div>
+<!-- TARGET NODE: ALEXANDER VANCE -->
+<div class="absolute top-[78%] left-1/2 -translate-x-1/2 -translate-y-1/2 group">
+<div class="w-20 h-20 bg-surface-container-high border border-outline-variant flex items-center justify-center p-1 grayscale brightness-75 group-hover:brightness-100 transition-all">
+<img class="w-full h-full object-cover" data-alt="Small thumbnail of the politician" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxZF8T12G5RqV4-0oFaeN6ePdbX2np_VUkK4GpWpEK5N5HYK7DYyfUGuzyVeBk8rxr_NhMoDQ5UoLcVVPOB6spaM4DKEy6jqp_ttM52saMN7HDQl-R-E-uBDktbp6iokuSjVMZfGd4Ft-nJBkXJNzgMJ6ZwuNMvMkA7MnxFpdHzCnb9DXNIGaNtWeu0Sxs8jKw1W274RY2X1MRWkGQdNdbf2YCFoUe7u5fMf9EbXvnuqGDgSYKGtaFf0xMVSAPLCWnwtFEsA7eR1r_"/>
+</div>
+<div class="mt-2 text-[10px] font-bold text-center uppercase text-on-surface-variant">ALEXANDER_VANCE</div>
+<div class="absolute -top-4 left-1/2 -translate-x-1/2 text-[8px] font-bold bg-error text-on-error px-1 uppercase">Primary_Target</div>
+</div>
+<!-- PROXY: MEDIA -->
+<div class="absolute top-[45%] left-[15%] -translate-x-1/2 -translate-y-1/2 opacity-50">
+<div class="w-12 h-12 border border-outline-variant/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant text-xl">rss_feed</span>
+</div>
+<div class="mt-1 text-[8px] text-center uppercase text-on-surface-variant/60">News_Proxy</div>
+</div>
+<!-- PROXY: LEGISLATIVE -->
+<div class="absolute top-[45%] left-[85%] -translate-x-1/2 -translate-y-1/2 opacity-50">
+<div class="w-12 h-12 border border-outline-variant/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant text-xl">gavel</span>
+</div>
+<div class="mt-1 text-[8px] text-center uppercase text-on-surface-variant/60">Internal_Cmte</div>
+</div>
+</div>
+<!-- Bottom Stats Bar -->
+<div class="grid grid-cols-3 gap-0 mt-8 border-t border-outline-variant/15">
+<div class="p-4 border-r border-outline-variant/15">
+<div class="text-[9px] font-label uppercase text-on-surface-variant mb-1">Direct_Connections</div>
+<div class="text-2xl font-headline font-bold text-primary">14</div>
+</div>
+<div class="p-4 border-r border-outline-variant/15">
+<div class="text-[9px] font-label uppercase text-on-surface-variant mb-1">Risk_Convergence</div>
+<div class="text-2xl font-headline font-bold text-primary">82%</div>
+</div>
+<div class="p-4">
+<div class="text-[9px] font-label uppercase text-on-surface-variant mb-1">Network_Stability</div>
+<div class="text-2xl font-headline font-bold text-tertiary">LOW</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Promise vs Action & Pinned Evidence -->
+<div class="col-span-3 space-y-8">
+<!-- Promise vs Action Matrix -->
+<div class="bg-surface-container-low p-6">
+<h3 class="font-headline text-xs font-bold uppercase tracking-widest mb-6 flex items-center justify-between">
+<span>Fulfillment_Matrix</span>
+<span class="text-[9px] font-label text-primary">Live_Updates</span>
+</h3>
+<div class="space-y-6">
+<!-- Matrix Item 1 -->
+<div class="relative pl-4 border-l-2 border-primary-container">
+<div class="flex justify-between items-start mb-1">
+<span class="text-[10px] font-bold uppercase text-on-surface tracking-tighter">Energy_Reform_2024</span>
+<span class="bg-surface-bright text-[9px] px-1.5 font-label text-on-surface-variant">Redacted</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="flex-1 h-1 bg-surface-variant">
+<div class="h-full bg-primary w-[15%]"></div>
+</div>
+<span class="text-[9px] font-label font-bold text-primary">15%</span>
+</div>
+</div>
+<!-- Matrix Item 2 -->
+<div class="relative pl-4 border-l-2 border-secondary">
+<div class="flex justify-between items-start mb-1">
+<span class="text-[10px] font-bold uppercase text-on-surface tracking-tighter">Tax_Incentive_V4</span>
+<span class="bg-primary text-on-primary text-[9px] px-1.5 font-label">Passed</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="flex-1 h-1 bg-surface-variant">
+<div class="h-full bg-primary w-[92%]"></div>
+</div>
+<span class="text-[9px] font-label font-bold text-primary">92%</span>
+</div>
+</div>
+<!-- Matrix Item 3 -->
+<div class="relative pl-4 border-l-2 border-tertiary">
+<div class="flex justify-between items-start mb-1">
+<span class="text-[10px] font-bold uppercase text-on-surface tracking-tighter">Healthcare_Expansion</span>
+<span class="bg-tertiary-container text-on-tertiary-container text-[9px] px-1.5 font-label">Vetoed</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="flex-1 h-1 bg-surface-variant">
+<div class="h-full bg-tertiary w-[0%]"></div>
+</div>
+<span class="text-[9px] font-label font-bold text-tertiary">0%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Pinned Evidence Feed -->
+<div class="bg-surface-container-low p-6 flex-1">
+<h3 class="font-headline text-xs font-bold uppercase tracking-widest mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">push_pin</span> Pinned_Evidence
+                </h3>
+<div class="space-y-4">
+<!-- Evidence Card 1 -->
+<div class="bg-surface-container-high p-4 border border-outline-variant/10 group cursor-pointer hover:bg-surface-bright transition-colors">
+<div class="flex justify-between text-[9px] font-label text-on-surface-variant uppercase mb-2">
+<span>Doc_Ref: TR-901</span>
+<span>2hr_Ago</span>
+</div>
+<p class="text-[11px] leading-relaxed text-on-surface font-label mb-3">Recorded dialogue suggests prior knowledge of offshore allocation in District 4.</p>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-xs text-primary">audio_file</span>
+<span class="text-[9px] font-bold uppercase text-primary">Audio_Transcript.mp3</span>
+</div>
+</div>
+<!-- Evidence Card 2 -->
+<div class="bg-surface-container-high p-4 border border-outline-variant/10 group cursor-pointer hover:bg-surface-bright transition-colors">
+<div class="flex justify-between text-[9px] font-label text-on-surface-variant uppercase mb-2">
+<span>Doc_Ref: IM-224</span>
+<span>Yesterday</span>
+</div>
+<img class="w-full grayscale brightness-50 contrast-150 mb-3 h-24 object-cover" data-alt="Grainy CCTV style image of two figures meeting in a dark hallway" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7y1Q_gob2_GuExv61brSjFTROg615bk6Jz2YHD5gi0SMJLc-oszolGCnTjEgJzHi_N6H3pn_mUdJ60baen8DcLqGoWv4kH_eyQIqSNMEu5RFKT6jJnxF60OtwRtfhq9bN6rfSJ38IUIVx9RdCfoDjEHtlLbVRjn5TqmfTjVaq7w9SLt-Tcy1wpn58b8Qgp-OwWjZgw1CmaYJHb9pipt00IkQ2_2mQ4GLYIB65UEOxTenxNlBAd0uYpWyglj6SOUdfnJu4NeJ5AC1L"/>
+<p class="text-[11px] leading-relaxed text-on-surface font-label">Visual confirmation of meeting with known lobbyist at terminal 3.</p>
+</div>
+<!-- Evidence Card 3 -->
+<div class="bg-surface-container-high p-4 border border-outline-variant/10 group cursor-pointer hover:bg-surface-bright transition-colors">
+<div class="flex justify-between text-[9px] font-label text-on-surface-variant uppercase mb-2">
+<span>Doc_Ref: TX-011</span>
+<span>04-Oct-2024</span>
+</div>
+<p class="text-[11px] leading-relaxed text-on-surface font-label italic border-l border-primary/40 pl-2">"The stability of the protocol outweighs individual sentiment..."</p>
+<div class="mt-2 text-[9px] font-bold uppercase text-[#C1C6D5]/40">Internal_Memo_Leak</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- System Status Bar -->
+<footer class="mt-12 flex justify-between items-center text-[10px] font-label uppercase tracking-widest text-on-surface-variant/40 border-t border-outline-variant/10 pt-6">
+<div class="flex gap-6">
+<span>Core_Uptime: 432:12:09</span>
+<span>Signal_Strength: Encrypted</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-primary animate-pulse"></span>
+<span>System_Live_Feed_Active</span>
+</div>
+</footer>
+</main>
+</body></html>

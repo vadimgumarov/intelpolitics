@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>INTELLIGENCE PROTOCOL - Truthfulness Analysis</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "outline": "#8b919e",
+              "on-surface": "#e1e2e6",
+              "error": "#ffb4ab",
+              "surface-dim": "#111417",
+              "on-primary-fixed-variant": "#004689",
+              "on-primary-fixed": "#001b3c",
+              "secondary": "#c6c6c6",
+              "surface-variant": "#323538",
+              "surface-tint": "#a7c8ff",
+              "on-secondary": "#2f3131",
+              "on-error-container": "#ffdad6",
+              "on-secondary-container": "#b5b5b5",
+              "tertiary-container": "#ff544e",
+              "inverse-surface": "#e1e2e6",
+              "background": "#111417",
+              "primary-container": "#4491f4",
+              "surface-bright": "#37393d",
+              "on-background": "#e1e2e6",
+              "inverse-on-surface": "#2e3134",
+              "surface-container-highest": "#323538",
+              "surface": "#111417",
+              "outline-variant": "#414752",
+              "inverse-primary": "#005eb3",
+              "surface-container": "#1d2023",
+              "tertiary-fixed": "#ffdad6",
+              "on-tertiary-fixed": "#410003",
+              "on-tertiary-fixed-variant": "#930010",
+              "surface-container-low": "#191c1f",
+              "secondary-container": "#454747",
+              "on-surface-variant": "#c1c6d5",
+              "on-secondary-fixed": "#1a1c1c",
+              "on-error": "#690005",
+              "tertiary-fixed-dim": "#ffb3ad",
+              "error-container": "#93000a",
+              "tertiary": "#ffb3ad",
+              "on-primary": "#003061",
+              "surface-container-lowest": "#0b0f11",
+              "surface-container-high": "#272a2d",
+              "on-secondary-fixed-variant": "#454747",
+              "primary-fixed": "#d5e3ff",
+              "secondary-fixed-dim": "#c6c6c6",
+              "on-tertiary-container": "#5c0006",
+              "on-tertiary": "#680008",
+              "primary-fixed-dim": "#a7c8ff",
+              "secondary-fixed": "#e2e2e2",
+              "on-primary-container": "#002a55",
+              "primary": "#a7c8ff"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0rem", "lg": "0rem", "xl": "0rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .truthfulness-rose-bg {
+            background: radial-gradient(circle at center, rgba(68, 145, 244, 0.05) 0%, transparent 70%);
+        }
+        .ghost-line {
+            background-color: #414752;
+            opacity: 0.15;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary/30">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 h-14 bg-[#111417] border-b border-[#414752]/15 font-['Space_Grotesk'] tracking-tight text-sm uppercase">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tighter text-[#A7C8FF]">INTELLIGENCE PROTOCOL</span>
+<nav class="hidden md:flex gap-6">
+<a class="text-[#A7C8FF] border-b-2 border-[#A7C8FF] py-4" href="#">Analysis</a>
+<a class="text-[#C1C6D5] hover:bg-[#37393D] transition-colors duration-150 py-4 px-2" href="#">Network</a>
+<a class="text-[#C1C6D5] hover:bg-[#37393D] transition-colors duration-150 py-4 px-2" href="#">Archive</a>
+</nav>
+</div>
+<div class="flex items-center gap-4 text-[#A7C8FF]">
+<span class="material-symbols-outlined cursor-pointer hover:bg-[#37393D] p-1 transition-colors">sensors</span>
+<span class="material-symbols-outlined cursor-pointer hover:bg-[#37393D] p-1 transition-colors">security</span>
+<span class="material-symbols-outlined cursor-pointer hover:bg-[#37393D] p-1 transition-colors">notifications</span>
+<span class="material-symbols-outlined cursor-pointer hover:bg-[#37393D] p-1 transition-colors">account_circle</span>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-14 h-[calc(100vh-3.5rem)] flex flex-col pt-4 pb-6 bg-[#191C1F] w-64 border-r border-[#414752]/15 z-40 transition-all duration-200 ease-in-out">
+<div class="px-6 mb-8">
+<div class="text-[11px] font-bold uppercase tracking-[0.05rem] text-[#A7C8FF]">SYSTEM_OPERATOR</div>
+<div class="text-[9px] text-on-surface-variant font-medium">LEVEL_04_CLEARANCE</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="text-[#C1C6D5]/60 flex items-center px-4 py-3 hover:bg-[#272A2D] hover:text-[#A7C8FF] font-['Inter'] text-[11px] font-bold uppercase tracking-[0.05rem]" href="#">
+<span class="material-symbols-outlined mr-3">grid_view</span> Hub
+            </a>
+<a class="text-[#C1C6D5]/60 flex items-center px-4 py-3 hover:bg-[#272A2D] hover:text-[#A7C8FF] font-['Inter'] text-[11px] font-bold uppercase tracking-[0.05rem]" href="#">
+<span class="material-symbols-outlined mr-3">folder_shared</span> Dossiers
+            </a>
+<a class="text-[#A7C8FF] bg-[#272A2D] border-l-4 border-[#A7C8FF] flex items-center px-4 py-3 font-['Inter'] text-[11px] font-bold uppercase tracking-[0.05rem]" href="#">
+<span class="material-symbols-outlined mr-3">analytics</span> Intel
+            </a>
+<a class="text-[#C1C6D5]/60 flex items-center px-4 py-3 hover:bg-[#272A2D] hover:text-[#A7C8FF] font-['Inter'] text-[11px] font-bold uppercase tracking-[0.05rem]" href="#">
+<span class="material-symbols-outlined mr-3">compare_arrows</span> Compare
+            </a>
+</nav>
+<div class="mt-auto space-y-1">
+<a class="text-[#C1C6D5]/60 flex items-center px-4 py-3 hover:bg-[#272A2D] hover:text-[#A7C8FF] font-['Inter'] text-[11px] font-bold uppercase tracking-[0.05rem]" href="#">
+<span class="material-symbols-outlined mr-3">settings</span> Settings
+            </a>
+<a class="text-[#C1C6D5]/60 flex items-center px-4 py-3 hover:bg-[#272A2D] hover:text-[#A7C8FF] font-['Inter'] text-[11px] font-bold uppercase tracking-[0.05rem]" href="#">
+<span class="material-symbols-outlined mr-3">terminal</span> Terminal
+            </a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 mt-14 p-10 min-h-screen bg-surface">
+<!-- Header Section -->
+<div class="flex justify-between items-end mb-16">
+<div>
+<h1 class="font-headline text-5xl font-bold tracking-tight mb-2 uppercase">Subject: 0042_ALGORITHM_ECHO</h1>
+<p class="font-label text-xs tracking-widest text-on-surface-variant uppercase">Analysis Timestamp: 2024.05.22 // 14:00:00 UTC</p>
+</div>
+<div class="flex gap-4">
+<button class="bg-surface-bright text-on-surface px-6 py-2 font-label text-xs font-bold uppercase tracking-widest hover:bg-primary-container transition-all">Export_Report</button>
+<button class="border border-outline-variant/30 text-on-surface px-6 py-2 font-label text-xs font-bold uppercase tracking-widest hover:bg-surface-bright transition-all">Re-Verify</button>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-10">
+<!-- Truthfulness Rose Module -->
+<div class="col-span-12 lg:col-span-7 bg-surface-container-low p-10 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 font-label text-[10px] text-primary/40 uppercase">Interactive_Visualization_v2.4</div>
+<h2 class="font-headline text-xl mb-12 flex items-center gap-2">
+<span class="w-2 h-2 bg-primary"></span>
+                    TRUTHFULNESS_ROSE_MODEL
+                </h2>
+<div class="relative aspect-square flex items-center justify-center truthfulness-rose-bg">
+<!-- Spider Web Grid -->
+<div class="absolute inset-0 border border-outline-variant/10 rounded-full scale-[0.2]"></div>
+<div class="absolute inset-0 border border-outline-variant/10 rounded-full scale-[0.4]"></div>
+<div class="absolute inset-0 border border-outline-variant/10 rounded-full scale-[0.6]"></div>
+<div class="absolute inset-0 border border-outline-variant/10 rounded-full scale-[0.8]"></div>
+<div class="absolute inset-0 border border-outline-variant/10 rounded-full scale-[1]"></div>
+<!-- Structural Axis Lines -->
+<div class="absolute w-full h-[1px] bg-outline-variant/10"></div>
+<div class="absolute h-full w-[1px] bg-outline-variant/10"></div>
+<div class="absolute w-full h-[1px] bg-outline-variant/10 rotate-45"></div>
+<div class="absolute w-full h-[1px] bg-outline-variant/10 -rotate-45"></div>
+<!-- The Radar Shape (Simulated) -->
+<svg class="w-full h-full relative z-10 drop-shadow-[0_0_15px_rgba(167,200,255,0.15)]" viewbox="0 0 100 100">
+<!-- Economic, Social, Security, Digital, Ethical, Political, Environmental, Legal -->
+<polygon class="fill-primary-container/20 stroke-primary stroke-[0.5]" points="50,15 80,30 90,50 75,80 50,90 20,70 10,40 30,20"></polygon>
+<!-- Vertex Nodes -->
+<rect class="fill-primary" height="3" width="3" x="48.5" y="13.5"></rect>
+<rect class="fill-primary" height="3" width="3" x="78.5" y="28.5"></rect>
+<rect class="fill-primary" height="3" width="3" x="88.5" y="48.5"></rect>
+<rect class="fill-primary" height="3" width="3" x="73.5" y="78.5"></rect>
+<rect class="fill-primary" height="3" width="3" x="48.5" y="88.5"></rect>
+<rect class="fill-primary" height="3" width="3" x="18.5" y="68.5"></rect>
+<rect class="fill-primary" height="3" width="3" x="8.5" y="38.5"></rect>
+<rect class="fill-primary" height="3" width="3" x="28.5" y="18.5"></rect>
+</svg>
+<!-- Axis Labels -->
+<div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-6 font-label text-[10px] tracking-tighter uppercase font-bold text-on-surface-variant">Economic [88%]</div>
+<div class="absolute top-1/4 right-0 translate-x-1/2 font-label text-[10px] tracking-tighter uppercase font-bold text-on-surface-variant">Social [65%]</div>
+<div class="absolute bottom-1/4 right-0 translate-x-1/2 font-label text-[10px] tracking-tighter uppercase font-bold text-on-surface-variant text-tertiary-container">Security [22%]</div>
+<div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-6 font-label text-[10px] tracking-tighter uppercase font-bold text-on-surface-variant">Political [45%]</div>
+<div class="absolute bottom-1/4 left-0 -translate-x-1/2 font-label text-[10px] tracking-tighter uppercase font-bold text-on-surface-variant">Ethical [72%]</div>
+</div>
+<!-- Live Feed Ticker inside Rose module -->
+<div class="mt-16 border-t border-outline-variant/10 pt-6 flex justify-between">
+<div class="flex items-center gap-4">
+<div class="w-1.5 h-1.5 bg-primary animate-pulse"></div>
+<span class="font-label text-[10px] uppercase tracking-widest">Real-time delta tracking enabled</span>
+</div>
+<span class="font-label text-[10px] font-mono text-outline-variant">CORE_INTEGRITY: 74.2%</span>
+</div>
+</div>
+<!-- Analysis Sidebar & Alerts -->
+<div class="col-span-12 lg:col-span-5 space-y-10">
+<!-- Deviation Alerts -->
+<div class="bg-surface-container-high p-8 border-l-4 border-tertiary-container">
+<div class="flex items-start justify-between mb-4">
+<h3 class="font-headline font-bold text-tertiary-container uppercase tracking-tight">Critical_Deviation_Detected</h3>
+<span class="material-symbols-outlined text-tertiary-container">warning</span>
+</div>
+<p class="text-on-surface-variant text-sm mb-6 leading-relaxed">Security quadrant indicates 68% deviation from baseline patterns within the last 48 hours. Intelligence suggests unverified node injections in the Political axis.</p>
+<div class="flex gap-4">
+<button class="bg-tertiary-container text-on-tertiary-container px-4 py-1.5 font-label text-[10px] font-bold uppercase tracking-widest hover:brightness-110">Isolate_Source</button>
+<button class="text-tertiary-container border border-tertiary-container/30 px-4 py-1.5 font-label text-[10px] font-bold uppercase tracking-widest hover:bg-tertiary-container/10">Ignore</button>
+</div>
+</div>
+<!-- Intelligence Metrics -->
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container-low p-6">
+<div class="text-[9px] font-bold text-outline uppercase tracking-widest mb-1">Source_Reliability</div>
+<div class="font-headline text-3xl font-bold">0.94<span class="text-sm text-primary">/1.0</span></div>
+</div>
+<div class="bg-surface-container-low p-6">
+<div class="text-[9px] font-bold text-outline uppercase tracking-widest mb-1">Data_Latency</div>
+<div class="font-headline text-3xl font-bold">42<span class="text-sm text-primary">ms</span></div>
+</div>
+</div>
+<!-- Evidence Node Connectors -->
+<div class="bg-surface-container-low p-8">
+<h3 class="font-headline font-bold uppercase tracking-tight mb-6">Evidence_Nodes</h3>
+<div class="space-y-4">
+<div class="flex items-center group cursor-pointer">
+<div class="w-2 h-2 bg-secondary mr-4"></div>
+<div class="flex-1 border-b border-outline-variant/15 pb-2">
+<div class="flex justify-between items-center mb-1">
+<span class="font-label text-xs font-bold uppercase group-hover:text-primary transition-colors">Economic_Flow_A1</span>
+<span class="material-symbols-outlined text-sm text-outline">link</span>
+</div>
+<div class="text-[10px] text-outline-variant font-mono">HASH: 44F9...A221</div>
+</div>
+</div>
+<div class="flex items-center group cursor-pointer">
+<div class="w-2 h-2 bg-secondary mr-4"></div>
+<div class="flex-1 border-b border-outline-variant/15 pb-2">
+<div class="flex justify-between items-center mb-1">
+<span class="font-label text-xs font-bold uppercase group-hover:text-primary transition-colors">Social_Sentiment_Gamma</span>
+<span class="material-symbols-outlined text-sm text-outline">link</span>
+</div>
+<div class="text-[10px] text-outline-variant font-mono">HASH: 881E...330B</div>
+</div>
+</div>
+<div class="flex items-center group cursor-pointer">
+<div class="w-2 h-2 bg-secondary mr-4"></div>
+<div class="flex-1 border-b border-outline-variant/15 pb-2">
+<div class="flex justify-between items-center mb-1">
+<span class="font-label text-xs font-bold uppercase group-hover:text-primary transition-colors">Political_Pulse_Primary</span>
+<span class="material-symbols-outlined text-sm text-outline">link</span>
+</div>
+<div class="text-[10px] text-outline-variant font-mono">HASH: 22C0...990F</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Detailed Data Table -->
+<div class="mt-16 bg-surface-container-low overflow-hidden">
+<div class="px-8 py-6 border-b border-outline-variant/15 flex justify-between items-center bg-surface-container-high/30">
+<h3 class="font-headline font-bold uppercase tracking-tight">Category_Breakdown_Matrix</h3>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 bg-primary"></div>
+<span class="text-[10px] font-bold uppercase tracking-widest text-outline">Stable</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 bg-tertiary-container"></div>
+<span class="text-[10px] font-bold uppercase tracking-widest text-outline">Volatile</span>
+</div>
+</div>
+</div>
+<table class="w-full text-left font-label text-xs uppercase">
+<thead class="text-on-surface-variant font-bold border-b border-outline-variant/10">
+<tr>
+<th class="px-8 py-4 tracking-widest">Axis_Identifier</th>
+<th class="px-8 py-4 tracking-widest">Confidence_Score</th>
+<th class="px-8 py-4 tracking-widest">Variance_Rate</th>
+<th class="px-8 py-4 tracking-widest">Last_Verification</th>
+<th class="px-8 py-4 tracking-widest text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/5">
+<tr class="hover:bg-surface-bright/20 transition-colors">
+<td class="px-8 py-6 font-bold">Economic_Integrity</td>
+<td class="px-8 py-6">0.88 <span class="text-[10px] text-primary ml-2">+1.2%</span></td>
+<td class="px-8 py-6">Low</td>
+<td class="px-8 py-6 font-mono text-outline-variant">2024.05.22_12:30</td>
+<td class="px-8 py-6 text-right">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary">open_in_new</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-bright/20 transition-colors">
+<td class="px-8 py-6 font-bold">Social_Consistency</td>
+<td class="px-8 py-6">0.65 <span class="text-[10px] text-tertiary-container ml-2">-0.8%</span></td>
+<td class="px-8 py-6">Medium</td>
+<td class="px-8 py-6 font-mono text-outline-variant">2024.05.22_13:15</td>
+<td class="px-8 py-6 text-right">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary">open_in_new</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-bright/20 transition-colors bg-tertiary-container/5">
+<td class="px-8 py-6 font-bold text-tertiary-container">Security_Verification</td>
+<td class="px-8 py-6">0.22 <span class="text-[10px] text-tertiary-container ml-2">-15.4%</span></td>
+<td class="px-8 py-6 font-bold text-tertiary-container">CRITICAL</td>
+<td class="px-8 py-6 font-mono text-outline-variant">2024.05.22_13:45</td>
+<td class="px-8 py-6 text-right">
+<span class="material-symbols-outlined text-tertiary-container cursor-pointer hover:brightness-125">priority_high</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-bright/20 transition-colors">
+<td class="px-8 py-6 font-bold">Political_Weighting</td>
+<td class="px-8 py-6">0.45 <span class="text-[10px] text-primary ml-2">+4.5%</span></td>
+<td class="px-8 py-6">High</td>
+<td class="px-8 py-6 font-mono text-outline-variant">2024.05.21_18:00</td>
+<td class="px-8 py-6 text-right">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary">open_in_new</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- System Footer Metadata -->
+<footer class="mt-20 border-t border-outline-variant/15 pt-10 pb-10 flex flex-wrap gap-12 text-[10px] font-mono text-outline-variant uppercase">
+<div>NODE_ID: PROTOCOL_ALPHA_V7</div>
+<div>UPTIME: 14,222 HOURS</div>
+<div>GEO_LOCATION: [REDACTED]</div>
+<div class="ml-auto text-primary">ENCRYPTED_SESSION_ESTABLISHED // AES-256</div>
+</footer>
+</main>
+</body></html>

@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Intelligence Protocol - Politician Dossier</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "secondary": "#c6c6c6",
+                        "primary": "#a7c8ff",
+                        "surface-tint": "#a7c8ff",
+                        "secondary-fixed-dim": "#c6c6c6",
+                        "inverse-primary": "#005eb3",
+                        "outline": "#8b919e",
+                        "on-primary-fixed-variant": "#004689",
+                        "secondary-fixed": "#e2e2e2",
+                        "surface-bright": "#37393d",
+                        "on-tertiary-fixed": "#410003",
+                        "outline-variant": "#414752",
+                        "on-secondary-fixed-variant": "#454747",
+                        "inverse-on-surface": "#2e3134",
+                        "surface-variant": "#323538",
+                        "surface-dim": "#111417",
+                        "primary-fixed-dim": "#a7c8ff",
+                        "on-secondary": "#2f3131",
+                        "on-surface-variant": "#c1c6d5",
+                        "on-surface": "#e1e2e6",
+                        "primary-container": "#4491f4",
+                        "tertiary-fixed": "#ffdad6",
+                        "on-secondary-fixed": "#1a1c1c",
+                        "surface-container-lowest": "#0b0f11",
+                        "primary-fixed": "#d5e3ff",
+                        "on-error": "#690005",
+                        "surface": "#111417",
+                        "on-tertiary-container": "#5c0006",
+                        "surface-container-low": "#191c1f",
+                        "tertiary-fixed-dim": "#ffb3ad",
+                        "surface-container": "#1d2023",
+                        "on-secondary-container": "#b5b5b5",
+                        "surface-container-highest": "#323538",
+                        "error-container": "#93000a",
+                        "on-primary": "#003061",
+                        "inverse-surface": "#e1e2e6",
+                        "error": "#ffb4ab",
+                        "on-tertiary": "#680008",
+                        "on-background": "#e1e2e6",
+                        "surface-container-high": "#272a2d",
+                        "on-primary-container": "#002a55",
+                        "on-error-container": "#ffdad6",
+                        "tertiary": "#ffb3ad",
+                        "tertiary-container": "#ff544e",
+                        "secondary-container": "#454747",
+                        "background": "#111417",
+                        "on-tertiary-fixed-variant": "#930010",
+                        "on-primary-fixed": "#001b3c"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0px", "lg": "0px", "xl": "0px", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-space { font-family: 'Space Grotesk', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .radar-grid { background-image: radial-gradient(circle, #414752 1px, transparent 1px); background-size: 20px 20px; }
+        .ghost-border { border: 1px solid rgba(65, 71, 82, 0.15); }
+    </style>
+</head>
+<body class="bg-surface text-on-surface flex h-screen overflow-hidden selection:bg-primary-container selection:text-on-primary-container">
+<!-- SIDE NAVIGATION (Shared Component) -->
+<aside class="hidden md:flex flex-col h-full py-8 bg-[#111417] w-64 border-r-0 shrink-0">
+<div class="px-6 mb-12">
+<h1 class="text-xl font-bold font-['Space_Grotesk'] text-[#A7C8FF]">PROTOCOL</h1>
+<p class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest text-[#C1C6D5] opacity-70">OPERATIONAL UNIT 01</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center px-6 py-3 transition-all duration-200 text-[#C1C6D5] opacity-70 hover:bg-[#272A2D] hover:opacity-100 font-['Inter'] text-xs font-medium uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined mr-4">grid_view</span> Hub
+            </a>
+<a class="flex items-center px-6 py-3 transition-all duration-200 text-[#A7C8FF] border-l-2 border-[#A7C8FF] bg-[#191C1F] font-['Inter'] text-xs font-medium uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined mr-4">folder_shared</span> Dossiers
+            </a>
+<a class="flex items-center px-6 py-3 transition-all duration-200 text-[#C1C6D5] opacity-70 hover:bg-[#272A2D] hover:opacity-100 font-['Inter'] text-xs font-medium uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined mr-4">query_stats</span> Intel
+            </a>
+<a class="flex items-center px-6 py-3 transition-all duration-200 text-[#C1C6D5] opacity-70 hover:bg-[#272A2D] hover:opacity-100 font-['Inter'] text-xs font-medium uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined mr-4">compare_arrows</span> Compare
+            </a>
+</nav>
+<div class="mt-auto pt-8 border-t border-outline-variant/10">
+<a class="flex items-center px-6 py-3 transition-all duration-200 text-[#C1C6D5] opacity-70 hover:bg-[#272A2D] hover:opacity-100 font-['Inter'] text-xs font-medium uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined mr-4">admin_panel_settings</span> Security
+            </a>
+<a class="flex items-center px-6 py-3 transition-all duration-200 text-[#C1C6D5] opacity-70 hover:bg-[#272A2D] hover:opacity-100 font-['Inter'] text-xs font-medium uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined mr-4">terminal</span> Logs
+            </a>
+</div>
+</aside>
+<!-- MAIN CONTENT CANVAS -->
+<main class="flex-1 flex flex-col h-full overflow-hidden bg-surface-container-low">
+<!-- TOP APP BAR (Shared Component) -->
+<header class="flex justify-between items-center w-full px-6 py-3 bg-[#111417] border-b-0 shrink-0">
+<div class="flex items-center gap-4">
+<span class="text-lg font-bold tracking-tighter text-[#A7C8FF] uppercase font-['Space_Grotesk']">THE INTELLIGENCE PROTOCOL</span>
+<span class="w-px h-4 bg-outline-variant/30"></span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest text-on-surface-variant">Dossier // 77-BETA</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden md:flex bg-surface-container h-9 items-center px-3 gap-2 outline-variant/20 border border-outline-variant/10">
+<span class="material-symbols-outlined text-sm text-outline">search</span>
+<input class="bg-transparent border-none text-[10px] tracking-widest focus:ring-0 text-on-surface w-48" placeholder="QUERY DATABASE..." type="text"/>
+</div>
+<div class="flex items-center gap-3">
+<button class="material-symbols-outlined text-[#C1C6D5] hover:bg-[#37393D] transition-colors p-1.5">notifications</button>
+<button class="material-symbols-outlined text-[#C1C6D5] hover:bg-[#37393D] transition-colors p-1.5">settings</button>
+<div class="w-8 h-8 bg-primary-container/20 flex items-center justify-center">
+<img alt="Analyst Profile" class="w-full h-full object-cover" data-alt="Minimalist avatar placeholder for a high-level system analyst" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9_wtGKX0_hGN-Vkson_EC_e2C0xCgFTKjnl8uFeB0e0-koyQr1XGqeY8dt9IJy5NCfXZEGkPiJ7VSM23lQWt0eeG8hCC21rQg_QX6FFlBIQ4qENc2UgLiwuNgZ-bwvxVY5CCTb-ks9CVLR3sWMulpq_Ts2sgiPTvKwdxNbHFd-OnPl_hXk-9Zt6imJPh3ED_3u1LTVJx-wvBjAIAzGwhiTrbfKHdZYlOFA7q7qXkqQ9q0urjsFXmyDyWM203DYh4hzw8yhGW5SfT8"/>
+</div>
+</div>
+</div>
+</header>
+<!-- DOSSIER CANVAS -->
+<div class="flex-1 flex overflow-hidden">
+<!-- CENTRAL WORKSPACE -->
+<div class="flex-1 overflow-y-auto p-10 custom-scrollbar">
+<!-- HEADER SECTION: ASYMMETRIC DOSSIER TOP -->
+<section class="flex flex-col md:flex-row gap-12 mb-16">
+<div class="w-48 h-64 bg-surface-container-high shrink-0 relative p-1 overflow-hidden">
+<img alt="Politician Portrait" class="w-full h-full object-cover grayscale opacity-80 mix-blend-luminosity" data-alt="Official high-contrast black and white portrait of a senior politician" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqBiYCVgIOrV2gqgNK5lhiDMvBNmXPqoV670jBnahYg5-h9E9uA7bOPJhx9Zlf572WUiW4-0P7dW-iOr6LxebtMcxPCZHkkSitRGkLFmHbR0Stqlo_6MmsoWTWZwAHz4rdxLWy1DNIB_tEVhhgWZ0QRjfwCZlVYpwTiUfCAnP8jogdEd2OD2Pxc7vh5lgvxy7TWkhGTp0xChudj5N2ywsEOC-a7QnNQpENVbNy2a6ReGd1XaEOMgC22Z9-8MKSdIr9eaqB2A7JEBaH"/>
+<div class="absolute inset-0 border border-primary/20 pointer-events-none"></div>
+<div class="absolute bottom-2 left-2 bg-primary px-1.5 py-0.5 text-[8px] font-bold text-on-primary">CLASSIFIED</div>
+</div>
+<div class="flex-1 flex flex-col justify-end">
+<div class="flex items-center gap-3 mb-2">
+<span class="text-primary text-[10px] tracking-widest font-bold uppercase">Subject ID: SEC-491-00</span>
+<span class="h-px w-12 bg-outline-variant"></span>
+<span class="text-on-surface-variant text-[10px] tracking-widest uppercase">Affiliation: Independent</span>
+</div>
+<h2 class="text-6xl font-black font-space tracking-tighter text-on-surface uppercase mb-4 leading-none">Senator Elias <br/>Vance</h2>
+<div class="flex gap-10">
+<div>
+<p class="text-[10px] font-bold text-outline uppercase tracking-widest mb-1">Status</p>
+<p class="text-sm font-medium text-primary uppercase">Active Intelligence</p>
+</div>
+<div>
+<p class="text-[10px] font-bold text-outline uppercase tracking-widest mb-1">Influence Tier</p>
+<p class="text-sm font-medium text-on-surface uppercase">Global Tier 1</p>
+</div>
+<div>
+<p class="text-[10px] font-bold text-outline uppercase tracking-widest mb-1">Jurisdiction</p>
+<p class="text-sm font-medium text-on-surface uppercase">Federal Oversight</p>
+</div>
+</div>
+</div>
+</section>
+<!-- MAIN BENTO GRID LAYOUT -->
+<div class="grid grid-cols-12 gap-8">
+<!-- COLUMN 1: TRUTHFULNESS ROSE (Radar) -->
+<div class="col-span-12 lg:col-span-5 bg-surface-container-high p-8 flex flex-col border border-outline-variant/10">
+<div class="flex justify-between items-start mb-12">
+<div>
+<h3 class="text-sm font-bold font-space text-primary uppercase tracking-widest mb-1">Truthfulness Rose</h3>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest">Metric Analysis: Integrity Vector</p>
+</div>
+<div class="text-right">
+<span class="text-2xl font-bold font-space text-primary">84.2</span>
+<p class="text-[8px] text-outline uppercase">Aggregate Score</p>
+</div>
+</div>
+<!-- RADAR CHART VISUALIZATION -->
+<div class="relative w-full aspect-square radar-grid border border-outline-variant/10 flex items-center justify-center mb-8">
+<!-- SVG Radar Mockup -->
+<svg class="w-full h-full p-4 overflow-visible" viewbox="0 0 200 200">
+<!-- Axes Labels -->
+<text class="fill-outline text-[8px] font-bold uppercase" text-anchor="middle" x="100" y="10">Ethics</text>
+<text class="fill-outline text-[8px] font-bold uppercase" text-anchor="start" x="190" y="70">Social</text>
+<text class="fill-outline text-[8px] font-bold uppercase" text-anchor="start" x="160" y="170">Economic</text>
+<text class="fill-outline text-[8px] font-bold uppercase" text-anchor="end" x="40" y="170">Healthcare</text>
+<text class="fill-outline text-[8px] font-bold uppercase" text-anchor="end" x="10" y="70">Fact-Check</text>
+<!-- Background Pentagon Lines -->
+<polygon class="text-outline-variant/30" fill="none" points="100,20 180,80 150,160 50,160 20,80" stroke="currentColor" stroke-width="0.5"></polygon>
+<polygon class="text-outline-variant/30" fill="none" points="100,50 140,80 125,120 75,120 60,80" stroke="currentColor" stroke-width="0.5"></polygon>
+<polygon class="text-outline-variant/30" fill="none" points="100,80 115,95 110,110 90,110 85,95" stroke="currentColor" stroke-width="0.5"></polygon>
+<!-- Data Polygon (The Rose) -->
+<polygon fill="rgba(167, 200, 255, 0.15)" points="100,45 160,85 140,140 70,150 40,75" stroke="#A7C8FF" stroke-width="1.5"></polygon>
+<!-- Vertices Nodes -->
+<rect class="fill-primary" height="4" width="4" x="98" y="43"></rect>
+<rect class="fill-primary" height="4" width="4" x="158" y="83"></rect>
+<rect class="fill-primary" height="4" width="4" x="138" y="138"></rect>
+<rect class="fill-primary" height="4" width="4" x="68" y="148"></rect>
+<rect class="fill-primary" height="4" width="4" x="38" y="73"></rect>
+</svg>
+</div>
+<!-- TIMELINE SCRUBBER -->
+<div class="mt-auto pt-6 border-t border-outline-variant/10">
+<div class="flex justify-between items-center mb-4">
+<span class="text-[9px] font-bold text-outline uppercase tracking-widest">Timeline Scrubber (10yr)</span>
+<span class="text-[9px] font-bold text-primary font-mono">2014 — 2024</span>
+</div>
+<div class="relative h-6 flex items-center group cursor-pointer">
+<div class="absolute w-full h-px bg-outline-variant/40"></div>
+<div class="absolute w-3/4 h-[2px] bg-primary"></div>
+<!-- Markers -->
+<div class="absolute left-0 w-1 h-3 bg-outline-variant"></div>
+<div class="absolute left-1/4 w-1 h-2 bg-outline-variant/40"></div>
+<div class="absolute left-1/2 w-1 h-2 bg-outline-variant/40"></div>
+<div class="absolute left-3/4 w-1 h-4 bg-primary ring-4 ring-primary/20"></div>
+<div class="absolute right-0 w-1 h-3 bg-outline-variant"></div>
+</div>
+<div class="flex justify-between text-[8px] text-outline-variant uppercase font-mono mt-1">
+<span>'14</span>
+<span>'16</span>
+<span>'18</span>
+<span>'20</span>
+<span>'22</span>
+<span>'24</span>
+</div>
+</div>
+</div>
+<!-- COLUMN 2: INFLUENCE NEXUS -->
+<div class="col-span-12 lg:col-span-7 flex flex-col gap-8">
+<!-- TAB SWITCHER -->
+<div class="bg-surface-container p-1 flex border border-outline-variant/10">
+<button class="flex-1 py-3 text-[10px] font-bold tracking-[0.15em] bg-surface-bright text-primary border-b-2 border-primary">FINANCIAL TIES</button>
+<button class="flex-1 py-3 text-[10px] font-bold tracking-[0.15em] text-outline hover:text-on-surface-variant hover:bg-surface-container-high transition-colors">LEGISLATIVE RECORD</button>
+<button class="flex-1 py-3 text-[10px] font-bold tracking-[0.15em] text-outline hover:text-on-surface-variant hover:bg-surface-container-high transition-colors">SOCIAL SENTIMENT</button>
+</div>
+<!-- FINANCIAL TIES VIEW -->
+<div class="flex-1 bg-surface-container-high p-8 border border-outline-variant/10 relative overflow-hidden">
+<!-- Background Schematic Elements -->
+<div class="absolute top-0 right-0 p-4 opacity-10">
+<span class="material-symbols-outlined text-8xl" style="font-variation-settings: 'wght' 100">account_tree</span>
+</div>
+<div class="mb-8">
+<h3 class="text-sm font-bold font-space text-primary uppercase tracking-widest mb-1">Lobbying Hub &amp; Industry Branches</h3>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest">Inbound Capital Distribution Matrix</p>
+</div>
+<!-- LOBBYING FLOW DIAGRAM (MOCKUP) -->
+<div class="grid grid-cols-12 gap-6 relative">
+<!-- Central Hub -->
+<div class="col-span-4 flex flex-col gap-4">
+<div class="p-4 bg-surface-bright border border-primary/20 relative">
+<p class="text-[8px] text-primary font-bold uppercase mb-1">Total Contributions</p>
+<p class="text-xl font-bold font-mono">$12.4M</p>
+<div class="absolute -right-6 top-1/2 w-6 h-px bg-primary/30"></div>
+</div>
+<div class="p-4 bg-surface-container-lowest border border-outline-variant/20">
+<p class="text-[8px] text-outline font-bold uppercase mb-1">PAC Funding</p>
+<p class="text-lg font-bold font-mono text-on-surface-variant">$8.2M</p>
+</div>
+</div>
+<!-- Connectors -->
+<div class="col-span-1 relative">
+<div class="absolute left-0 top-10 w-full h-px bg-outline-variant/30"></div>
+<div class="absolute left-0 bottom-10 w-full h-px bg-outline-variant/30"></div>
+<div class="absolute right-0 top-10 bottom-10 w-px bg-outline-variant/30"></div>
+</div>
+<!-- Industry Branches -->
+<div class="col-span-7 flex flex-col gap-3">
+<div class="flex items-center justify-between p-3 bg-surface-container hover:bg-surface-bright transition-colors group">
+<div class="flex items-center gap-3">
+<div class="w-1.5 h-1.5 bg-tertiary"></div>
+<span class="text-[10px] font-bold uppercase tracking-widest">Defense &amp; Aerospace</span>
+</div>
+<span class="text-[10px] font-mono font-bold text-tertiary">$4.1M</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-container hover:bg-surface-bright transition-colors group">
+<div class="flex items-center gap-3">
+<div class="w-1.5 h-1.5 bg-primary"></div>
+<span class="text-[10px] font-bold uppercase tracking-widest">Tech &amp; Semiconductors</span>
+</div>
+<span class="text-[10px] font-mono font-bold text-primary">$3.8M</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-container hover:bg-surface-bright transition-colors group">
+<div class="flex items-center gap-3">
+<div class="w-1.5 h-1.5 bg-outline-variant"></div>
+<span class="text-[10px] font-bold uppercase tracking-widest">Energy Logistics</span>
+</div>
+<span class="text-[10px] font-mono font-bold text-on-surface-variant">$2.5M</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-container hover:bg-surface-bright transition-colors group">
+<div class="flex items-center gap-3">
+<div class="w-1.5 h-1.5 bg-outline-variant"></div>
+<span class="text-[10px] font-bold uppercase tracking-widest">Pharmaceuticals</span>
+</div>
+<span class="text-[10px] font-mono font-bold text-on-surface-variant">$2.0M</span>
+</div>
+</div>
+</div>
+<!-- INVESTIGATIVE NOTE -->
+<div class="mt-8 pt-8 border-t border-outline-variant/10">
+<div class="flex gap-4 p-4 bg-tertiary-container/5 border-l-2 border-tertiary">
+<span class="material-symbols-outlined text-tertiary text-lg">warning</span>
+<div>
+<p class="text-[10px] font-bold text-tertiary uppercase tracking-widest mb-1">Anomaly Detected</p>
+<p class="text-[11px] leading-relaxed text-on-surface-variant">Unusually high correlation (0.92) between Aerospace contributions and the 2023 Defense Appropriation Act sponsorship. Source verification recommended.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- BOTTOM SECTION: LOGS & TIMELINE -->
+<div class="col-span-12 bg-surface-container p-6 border border-outline-variant/10">
+<div class="flex justify-between items-center mb-6">
+<h4 class="text-[10px] font-bold text-outline uppercase tracking-[0.2em]">Operational Activity Logs</h4>
+<div class="flex gap-4">
+<span class="text-[10px] text-primary uppercase font-bold cursor-pointer">Export Dossier</span>
+<span class="text-[10px] text-outline-variant">|</span>
+<span class="text-[10px] text-on-surface-variant uppercase font-bold cursor-pointer">Refresh Feed</span>
+</div>
+</div>
+<div class="space-y-4 font-mono">
+<div class="flex gap-6 text-[11px] border-b border-outline-variant/5 pb-2">
+<span class="text-outline-variant shrink-0">[14:22:09]</span>
+<span class="text-primary shrink-0">DATA_SYNC</span>
+<span class="text-on-surface-variant italic">New legislative amendment detected: bill_id_992 (Strategic Minerals)</span>
+</div>
+<div class="flex gap-6 text-[11px] border-b border-outline-variant/5 pb-2">
+<span class="text-outline-variant shrink-0">[11:05:41]</span>
+<span class="text-tertiary shrink-0">THREAT_LVL</span>
+<span class="text-on-surface-variant italic">Corruption index updated to 0.45 (+0.04) after SuperPAC disclosure.</span>
+</div>
+<div class="flex gap-6 text-[11px]">
+<span class="text-outline-variant shrink-0">[09:12:33]</span>
+<span class="text-secondary shrink-0">QUERY_OK</span>
+<span class="text-on-surface-variant italic">Vance, E. dossier version 7.2.4 loaded successfully.</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- RIGHT DRAWER: SOURCE VERIFICATION -->
+<aside class="w-80 border-l border-outline-variant/10 bg-surface-container-low flex flex-col shrink-0">
+<div class="p-6 border-b border-outline-variant/10 bg-surface">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1">verified_user</span>
+<h3 class="text-xs font-bold font-space text-on-surface uppercase tracking-widest">Source Verification</h3>
+</div>
+<p class="text-[10px] text-outline uppercase tracking-widest">Integrity Protocol Active</p>
+</div>
+<div class="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
+<!-- SOURCE CARD -->
+<div class="space-y-4">
+<div class="flex items-start justify-between">
+<span class="text-[9px] font-bold text-primary uppercase tracking-widest">Primary Evidence</span>
+<span class="text-[9px] px-1.5 py-0.5 bg-surface-bright text-on-surface font-mono">ID: REF-001</span>
+</div>
+<div class="bg-surface-container p-4 space-y-3">
+<p class="text-[11px] font-medium leading-relaxed text-on-surface italic">"FEC Filing Q3-2023: Disclosure of non-discretionary trust linked to offshore entity 'X-Aviation Ltd'."</p>
+<div class="flex items-center justify-between pt-3 border-t border-outline-variant/20">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="text-[9px] font-bold uppercase text-outline">Verified</span>
+</div>
+<button class="text-[9px] font-bold text-primary underline uppercase tracking-widest">View Doc</button>
+</div>
+</div>
+</div>
+<!-- SOURCE CARD -->
+<div class="space-y-4 opacity-70">
+<div class="flex items-start justify-between">
+<span class="text-[9px] font-bold text-outline uppercase tracking-widest">Secondary Intelligence</span>
+<span class="text-[9px] px-1.5 py-0.5 bg-surface-bright text-on-surface font-mono">ID: REF-009</span>
+</div>
+<div class="bg-surface-container p-4 space-y-3">
+<p class="text-[11px] font-medium leading-relaxed text-on-surface italic">"Intercepted communication regarding privatization schedule for arctic mining sectors."</p>
+<div class="flex items-center justify-between pt-3 border-t border-outline-variant/20">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-outline-variant"></span>
+<span class="text-[9px] font-bold uppercase text-outline">Unverified</span>
+</div>
+<button class="text-[9px] font-bold text-outline underline uppercase tracking-widest">Unlock</button>
+</div>
+</div>
+</div>
+<!-- REPUTATION GRAPH (MINI) -->
+<div class="pt-8 mt-8 border-t border-outline-variant/10">
+<h4 class="text-[9px] font-bold text-outline uppercase tracking-widest mb-6">Analyst Credibility Rating</h4>
+<div class="flex items-end gap-1.5 h-16">
+<div class="w-full bg-outline-variant/20 h-1/4"></div>
+<div class="w-full bg-outline-variant/20 h-1/3"></div>
+<div class="w-full bg-outline-variant/20 h-1/2"></div>
+<div class="w-full bg-primary h-3/4"></div>
+<div class="w-full bg-primary h-full"></div>
+<div class="w-full bg-outline-variant/20 h-2/3"></div>
+</div>
+<p class="text-[9px] text-on-surface-variant text-center mt-3 font-mono">CONFIDENCE_LEVEL: 0.94</p>
+</div>
+</div>
+<div class="p-6 bg-surface-bright border-t border-outline-variant/20">
+<button class="w-full py-4 bg-primary text-on-primary text-[10px] font-bold tracking-[0.2em] uppercase hover:bg-primary-container transition-all">
+                        Request Field Validation
+                    </button>
+</div>
+</aside>
+</div>
+<!-- BOTTOM NAV BAR (Mobile Only - Shared Component) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 bg-[#323538]/70 backdrop-blur-xl z-50 border-t border-[#414752]/15 shadow-[0_-8px_24px_rgba(0,0,0,0.6)]">
+<button class="flex flex-col items-center justify-center text-[#C1C6D5] opacity-50 scale-90 duration-150">
+<span class="material-symbols-outlined">grid_view</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-[0.05rem]">Hub</span>
+</button>
+<button class="flex flex-col items-center justify-center text-[#A7C8FF] drop-shadow-[0_0_12px_rgba(167,200,255,0.15)] scale-90 duration-150">
+<span class="material-symbols-outlined">folder_shared</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-[0.05rem]">Dossiers</span>
+</button>
+<button class="flex flex-col items-center justify-center text-[#C1C6D5] opacity-50 scale-90 duration-150">
+<span class="material-symbols-outlined">query_stats</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-[0.05rem]">Intel</span>
+</button>
+<button class="flex flex-col items-center justify-center text-[#C1C6D5] opacity-50 scale-90 duration-150">
+<span class="material-symbols-outlined">compare_arrows</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-[0.05rem]">Compare</span>
+</button>
+</nav>
+</main>
+<!-- FLOATING ACTION BUTTON -->
+<button class="fixed right-6 bottom-6 w-14 h-14 bg-surface-bright flex items-center justify-center text-primary group border border-primary/20 shadow-2xl z-50">
+<span class="material-symbols-outlined text-2xl group-hover:rotate-90 transition-transform duration-300">add</span>
+</button>
+</body></html>

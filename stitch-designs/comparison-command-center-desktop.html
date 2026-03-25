@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>INTELLIGENCE PROTOCOL - Desktop Comparison Command Center</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "outline": "#8b919e",
+              "on-surface": "#e1e2e6",
+              "error": "#ffb4ab",
+              "surface-dim": "#111417",
+              "on-primary-fixed-variant": "#004689",
+              "on-primary-fixed": "#001b3c",
+              "secondary": "#c6c6c6",
+              "surface-variant": "#323538",
+              "surface-tint": "#a7c8ff",
+              "on-secondary": "#2f3131",
+              "on-error-container": "#ffdad6",
+              "on-secondary-container": "#b5b5b5",
+              "tertiary-container": "#ff544e",
+              "inverse-surface": "#e1e2e6",
+              "background": "#111417",
+              "primary-container": "#4491f4",
+              "surface-bright": "#37393d",
+              "on-background": "#e1e2e6",
+              "inverse-on-surface": "#2e3134",
+              "surface-container-highest": "#323538",
+              "surface": "#111417",
+              "outline-variant": "#414752",
+              "inverse-primary": "#005eb3",
+              "surface-container": "#1d2023",
+              "tertiary-fixed": "#ffdad6",
+              "on-tertiary-fixed": "#410003",
+              "on-tertiary-fixed-variant": "#930010",
+              "surface-container-low": "#191c1f",
+              "secondary-container": "#454747",
+              "on-surface-variant": "#c1c6d5",
+              "on-secondary-fixed": "#1a1c1c",
+              "on-error": "#690005",
+              "tertiary-fixed-dim": "#ffb3ad",
+              "error-container": "#93000a",
+              "tertiary": "#ffb3ad",
+              "on-primary": "#003061",
+              "surface-container-lowest": "#0b0f11",
+              "surface-container-high": "#272a2d",
+              "on-secondary-fixed-variant": "#454747",
+              "primary-fixed": "#d5e3ff",
+              "secondary-fixed-dim": "#c6c6c6",
+              "on-tertiary-container": "#5c0006",
+              "on-tertiary": "#680008",
+              "primary-fixed-dim": "#a7c8ff",
+              "secondary-fixed": "#e2e2e2",
+              "on-primary-container": "#002a55",
+              "primary": "#a7c8ff"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0px", "lg": "0px", "xl": "0px", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .truthfulness-rose-grid {
+            background-image: 
+                radial-gradient(circle at center, #414752 1px, transparent 1px),
+                linear-gradient(to right, #414752 1px, transparent 1px),
+                linear-gradient(to bottom, #414752 1px, transparent 1px);
+            background-size: 40px 40px, 40px 40px, 40px 40px;
+            background-position: center;
+            opacity: 0.1;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body overflow-hidden">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 h-14 bg-[#111417] border-b border-[#414752]/15">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tighter text-[#A7C8FF] font-headline">INTELLIGENCE PROTOCOL</span>
+<nav class="hidden md:flex gap-6 items-center h-full">
+<a class="text-[#C1C6D5] font-headline tracking-tight text-sm uppercase hover:bg-[#37393D] transition-colors px-2 py-1" href="#">Operations</a>
+<a class="text-[#A7C8FF] border-b-2 border-[#A7C8FF] font-headline tracking-tight text-sm uppercase px-2 py-1" href="#">Comparison</a>
+<a class="text-[#C1C6D5] font-headline tracking-tight text-sm uppercase hover:bg-[#37393D] transition-colors px-2 py-1" href="#">Archive</a>
+</nav>
+</div>
+<div class="flex items-center gap-4 text-[#A7C8FF]">
+<span class="material-symbols-outlined hover:bg-[#37393D] p-1 transition-colors cursor-pointer" data-icon="sensors">sensors</span>
+<span class="material-symbols-outlined hover:bg-[#37393D] p-1 transition-colors cursor-pointer" data-icon="security">security</span>
+<span class="material-symbols-outlined hover:bg-[#37393D] p-1 transition-colors cursor-pointer" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined hover:bg-[#37393D] p-1 transition-colors cursor-pointer" data-icon="account_circle">account_circle</span>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-14 h-[calc(100vh-3.5rem)] w-64 bg-[#191C1F] border-r border-[#414752]/15 flex flex-col pt-4 pb-6 z-40">
+<div class="px-6 mb-8">
+<h2 class="font-headline font-bold text-primary tracking-widest text-xs uppercase">SYSTEM_OPERATOR</h2>
+<p class="text-[10px] text-on-surface-variant font-bold opacity-60 uppercase">LEVEL_04_CLEARANCE</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="text-[#C1C6D5]/60 flex items-center px-4 py-3 font-['Inter'] text-[11px] font-bold uppercase tracking-[0.05rem] hover:bg-[#272A2D] hover:text-[#A7C8FF] transition-all" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="grid_view">grid_view</span> Hub
+            </a>
+<a class="text-[#C1C6D5]/60 flex items-center px-4 py-3 font-['Inter'] text-[11px] font-bold uppercase tracking-[0.05rem] hover:bg-[#272A2D] hover:text-[#A7C8FF] transition-all" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="folder_shared">folder_shared</span> Dossiers
+            </a>
+<a class="text-[#C1C6D5]/60 flex items-center px-4 py-3 font-['Inter'] text-[11px] font-bold uppercase tracking-[0.05rem] hover:bg-[#272A2D] hover:text-[#A7C8FF] transition-all" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="analytics">analytics</span> Intel
+            </a>
+<a class="text-[#A7C8FF] bg-[#272A2D] border-l-4 border-[#A7C8FF] flex items-center px-4 py-3 font-['Inter'] text-[11px] font-bold uppercase tracking-[0.05rem] transition-all" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="compare_arrows">compare_arrows</span> Compare
+            </a>
+</nav>
+<div class="mt-auto space-y-1 border-t border-[#414752]/15 pt-4">
+<a class="text-[#C1C6D5]/60 flex items-center px-4 py-3 font-['Inter'] text-[11px] font-bold uppercase tracking-[0.05rem] hover:bg-[#272A2D] transition-all" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="settings">settings</span> Settings
+            </a>
+<a class="text-[#C1C6D5]/60 flex items-center px-4 py-3 font-['Inter'] text-[11px] font-bold uppercase tracking-[0.05rem] hover:bg-[#272A2D] transition-all" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="terminal">terminal</span> Terminal
+            </a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 mt-14 p-8 h-[calc(100vh-3.5rem)] overflow-y-auto bg-surface">
+<!-- Header Section -->
+<div class="flex justify-between items-end mb-12">
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="w-2 h-2 bg-primary"></span>
+<span class="text-on-surface-variant font-label text-[10px] uppercase tracking-[0.2em]">Live Analysis / Session ID: 992-XPL</span>
+</div>
+<h1 class="font-headline text-4xl font-bold tracking-tight text-on-surface uppercase">Comparison Command Center</h1>
+</div>
+<div class="flex gap-4">
+<button class="bg-surface-bright text-on-surface px-6 py-2 text-xs font-bold uppercase tracking-wider border-none hover:bg-primary-container transition-all">Export Dossier</button>
+<button class="bg-primary-container text-on-primary-container px-6 py-2 text-xs font-bold uppercase tracking-wider border-none hover:brightness-110 transition-all">Generate Summary</button>
+</div>
+</div>
+<!-- Comparison Grid -->
+<div class="grid grid-cols-12 gap-6 items-start">
+<!-- Left Candidate -->
+<div class="col-span-3 space-y-8">
+<div class="bg-surface-container-low p-6 border-l-4 border-primary">
+<div class="relative w-full aspect-square mb-6 bg-surface-container-high overflow-hidden">
+<img alt="Candidate Alpha Profile" class="w-full h-full object-cover grayscale opacity-80 mix-blend-luminosity" data-alt="Portrait of a serious male politician in a dark suit" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0_n7BGITg-c9v31NLO_IJ_48mDzsf9ZdjTRxo9KeE_2EJcLh9Uu4zsvUqrHqn81_dow5mGdhuZrPxKyi1YOTvIcH_tQQqk4AQn5PdpQ0X9SnhvRr25rctNPhD1DFCBAQHVGAtS1AwVzTwMDKShV8onHK7KkBjIF0CUu2mtnhm30KYBei5uX9gCQgh90HM7GcND5qaxCxN_PyxzxuSwdogzrq7jNAyRYDOZaRVY9mLBLw1DA7Cqt4hdB_x1ZOqe08kFHW2tueA4TDw"/>
+<div class="absolute inset-0 bg-primary/5"></div>
+</div>
+<div class="font-headline font-bold text-2xl mb-1 uppercase text-primary">Julian Vance</div>
+<div class="font-label text-[10px] text-on-surface-variant uppercase tracking-widest mb-4">Incumbent / State Senator</div>
+<div class="space-y-2">
+<div class="flex justify-between text-[11px] uppercase tracking-tighter">
+<span class="text-on-surface-variant">Credibility Rating</span>
+<span class="text-primary">88.4%</span>
+</div>
+<div class="w-full h-0.5 bg-surface-variant">
+<div class="w-[88.4%] h-full bg-primary"></div>
+</div>
+</div>
+</div>
+<div class="space-y-4">
+<h3 class="font-headline text-xs font-bold uppercase text-on-surface-variant tracking-[0.1em]">Core Metrics</h3>
+<div class="grid grid-cols-2 gap-2">
+<div class="bg-surface-container-low p-3">
+<div class="text-[9px] text-on-surface-variant uppercase mb-1">Total Contributions</div>
+<div class="text-lg font-headline font-bold text-primary">$12.4M</div>
+</div>
+<div class="bg-surface-container-low p-3">
+<div class="text-[9px] text-on-surface-variant uppercase mb-1">Voter Sentiment</div>
+<div class="text-lg font-headline font-bold text-primary">+12.2</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Central Visual Engine: Truthfulness Rose -->
+<div class="col-span-6 relative aspect-square flex items-center justify-center">
+<div class="absolute inset-0 truthfulness-rose-grid"></div>
+<!-- Radar Chart Visualization -->
+<div class="relative w-[85%] h-[85%] flex items-center justify-center">
+<!-- SVG Background Lines -->
+<svg class="absolute w-full h-full" viewbox="0 0 100 100">
+<circle cx="50" cy="50" fill="none" r="48" stroke="#414752" stroke-dasharray="1 2" stroke-width="0.25"></circle>
+<circle cx="50" cy="50" fill="none" r="36" stroke="#414752" stroke-dasharray="1 2" stroke-width="0.25"></circle>
+<circle cx="50" cy="50" fill="none" r="24" stroke="#414752" stroke-dasharray="1 2" stroke-width="0.25"></circle>
+<circle cx="50" cy="50" fill="none" r="12" stroke="#414752" stroke-dasharray="1 2" stroke-width="0.25"></circle>
+<path d="M50 2 L50 98 M2 50 L98 50 M15.5 15.5 L84.5 84.5 M84.5 15.5 L15.5 84.5" stroke="#414752" stroke-width="0.1"></path>
+<!-- Candidate A Path (Julian Vance) -->
+<polygon fill="rgba(167, 200, 255, 0.15)" points="50,15 80,35 75,70 50,85 20,65 25,30" stroke="#A7C8FF" stroke-width="1.5"></polygon>
+<!-- Candidate B Path (Elena Thorne) -->
+<polygon fill="rgba(255, 179, 173, 0.15)" points="50,25 70,45 85,80 50,75 15,70 30,40" stroke="#FFB3AD" stroke-width="1.5"></polygon>
+</svg>
+<!-- Labels Around the Chart -->
+<span class="absolute top-0 text-[10px] font-bold uppercase text-on-surface-variant tracking-widest">Consistency</span>
+<span class="absolute right-0 text-[10px] font-bold uppercase text-on-surface-variant tracking-widest rotate-90 translate-x-12">Transparency</span>
+<span class="absolute bottom-0 text-[10px] font-bold uppercase text-on-surface-variant tracking-widest">Fact-Check</span>
+<span class="absolute left-0 text-[10px] font-bold uppercase text-on-surface-variant tracking-widest -rotate-90 -translate-x-12">Rhetoric</span>
+<div class="text-center z-10 pointer-events-none">
+<div class="font-headline text-5xl font-bold tracking-tighter text-on-surface">ROSE_01</div>
+<div class="text-[9px] uppercase tracking-[0.4em] text-on-surface-variant">Analytical Overlap</div>
+</div>
+</div>
+<!-- Floating Data Nodes -->
+<div class="absolute top-10 right-10 flex flex-col items-end">
+<div class="w-12 h-[1px] bg-primary mb-2"></div>
+<span class="text-[9px] text-primary uppercase font-bold">Node Conflict: 78.4</span>
+</div>
+</div>
+<!-- Right Candidate -->
+<div class="col-span-3 space-y-8">
+<div class="bg-surface-container-low p-6 border-r-4 border-tertiary">
+<div class="relative w-full aspect-square mb-6 bg-surface-container-high overflow-hidden">
+<img alt="Candidate Beta Profile" class="w-full h-full object-cover grayscale opacity-80 mix-blend-luminosity" data-alt="Portrait of a confident female politician in a professional suit" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDj0cUFMfAqiI_kqVaZ4W7DsawRDIjYDmMWZkWflqBuGBN8ms9Do568g2TgTMvQ4Kig_0PvObKe7W0GaunTtQQ6V2EAiQl_BK48Kvqo9eVfpWT_kZi43SYN7ebM1mjFLVV2ZPOQKv3JtEFt62jeZ8hWoefXspYG6IAdqPLmsnIw--1tbZNww6cuxeZzZ1Za1udMrSEUEkfoE62lTK1mUWbKjfqtudDtxwe9PNQ9hvPsxqJ0DuLDHT0WQcA9L-J650yleUCE1xq7KfmI"/>
+<div class="absolute inset-0 bg-tertiary/5"></div>
+</div>
+<div class="font-headline font-bold text-2xl mb-1 uppercase text-tertiary">Elena Thorne</div>
+<div class="font-label text-[10px] text-on-surface-variant uppercase tracking-widest mb-4">Challenger / Former AG</div>
+<div class="space-y-2">
+<div class="flex justify-between text-[11px] uppercase tracking-tighter">
+<span class="text-on-surface-variant">Credibility Rating</span>
+<span class="text-tertiary">91.2%</span>
+</div>
+<div class="w-full h-0.5 bg-surface-variant">
+<div class="w-[91.2%] h-full bg-tertiary"></div>
+</div>
+</div>
+</div>
+<div class="space-y-4 text-right">
+<h3 class="font-headline text-xs font-bold uppercase text-on-surface-variant tracking-[0.1em]">Core Metrics</h3>
+<div class="grid grid-cols-2 gap-2">
+<div class="bg-surface-container-low p-3">
+<div class="text-[9px] text-on-surface-variant uppercase mb-1">Total Contributions</div>
+<div class="text-lg font-headline font-bold text-tertiary">$9.8M</div>
+</div>
+<div class="bg-surface-container-low p-3">
+<div class="text-[9px] text-on-surface-variant uppercase mb-1">Voter Sentiment</div>
+<div class="text-lg font-headline font-bold text-tertiary">+15.8</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Row: Multi-panel Analysis -->
+<!-- Network Collision -->
+<div class="col-span-4 bg-surface-container-low p-6">
+<div class="flex items-center justify-between mb-8">
+<h4 class="font-headline text-xs font-bold uppercase tracking-widest text-on-surface">Network Collision</h4>
+<span class="material-symbols-outlined text-primary text-sm" data-icon="hub">hub</span>
+</div>
+<div class="space-y-6">
+<div class="flex items-center gap-4">
+<div class="flex-1 bg-surface-container-highest h-4 relative">
+<div class="absolute right-0 top-0 bottom-0 w-[45%] bg-primary opacity-30"></div>
+<div class="absolute left-0 top-0 bottom-0 w-[45%] bg-tertiary opacity-30"></div>
+<div class="absolute left-[40%] right-[40%] top-0 bottom-0 bg-secondary z-10"></div>
+</div>
+<span class="text-[10px] font-bold w-12 text-on-surface">22.4%</span>
+</div>
+<div class="text-[9px] text-on-surface-variant uppercase tracking-wider leading-relaxed">
+                        Significant donor overlap detected in the <span class="text-on-surface">Real Estate</span> and <span class="text-on-surface">FinTech</span> sectors. Cross-referencing reveals 14 shared entity identifiers between dossiers Vance-01 and Thorne-B.
+                    </div>
+<div class="grid grid-cols-3 gap-1 pt-4 border-t border-outline-variant/15">
+<div class="h-1 bg-primary"></div>
+<div class="h-1 bg-secondary"></div>
+<div class="h-1 bg-tertiary"></div>
+</div>
+</div>
+</div>
+<!-- Comparative Performance Matrix -->
+<div class="col-span-8 bg-surface-container-low p-6">
+<div class="flex items-center justify-between mb-8">
+<h4 class="font-headline text-xs font-bold uppercase tracking-widest text-on-surface">Performance Matrix</h4>
+<div class="flex gap-4 text-[9px] uppercase font-bold tracking-widest">
+<span class="flex items-center gap-1"><span class="w-2 h-2 bg-primary"></span> Vance</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 bg-tertiary"></span> Thorne</span>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left text-[11px] font-body">
+<thead>
+<tr class="border-b border-outline-variant/20 uppercase tracking-widest text-on-surface-variant">
+<th class="py-3 font-normal">Vector</th>
+<th class="py-3 font-normal">A_Signal</th>
+<th class="py-3 font-normal">B_Signal</th>
+<th class="py-3 font-normal">Delta</th>
+<th class="py-3 font-normal text-right">Confidence</th>
+</tr>
+</thead>
+<tbody class="text-on-surface">
+<tr class="border-b border-outline-variant/10">
+<td class="py-4 font-bold uppercase text-[10px]">Legislative Efficacy</td>
+<td class="py-4 text-primary">0.74</td>
+<td class="py-4 text-tertiary">0.42</td>
+<td class="py-4">+0.32</td>
+<td class="py-4 text-right">98.1%</td>
+</tr>
+<tr class="border-b border-outline-variant/10">
+<td class="py-4 font-bold uppercase text-[10px]">Media Sentiment</td>
+<td class="py-4 text-primary">-0.12</td>
+<td class="py-4 text-tertiary">+0.68</td>
+<td class="py-4">-0.80</td>
+<td class="py-4 text-right">92.4%</td>
+</tr>
+<tr class="border-b border-outline-variant/10">
+<td class="py-4 font-bold uppercase text-[10px]">Resource Allocation</td>
+<td class="py-4 text-primary">0.89</td>
+<td class="py-4 text-tertiary">0.81</td>
+<td class="py-4">+0.08</td>
+<td class="py-4 text-right">86.7%</td>
+</tr>
+<tr>
+<td class="py-4 font-bold uppercase text-[10px]">Policy Coherence</td>
+<td class="py-4 text-primary">0.55</td>
+<td class="py-4 text-tertiary">0.91</td>
+<td class="py-4">-0.36</td>
+<td class="py-4 text-right">94.2%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- System Logs Footer -->
+<div class="mt-12 flex justify-between items-center border-t border-outline-variant/15 pt-6">
+<div class="flex gap-8">
+<div class="flex flex-col">
+<span class="text-[9px] uppercase text-on-surface-variant mb-1 tracking-widest">Processing Speed</span>
+<span class="text-xs font-mono text-primary">14.2 teraflops/s</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[9px] uppercase text-on-surface-variant mb-1 tracking-widest">Data Sources</span>
+<span class="text-xs font-mono text-primary">8,412 Active Streams</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></span>
+<span class="text-[10px] font-bold uppercase text-on-surface tracking-[0.2em]">All Systems Nominal // Archive Synced</span>
+</div>
+</div>
+</main>
+<!-- Contextual Decorative Elements (Ghost Lines) -->
+<div class="fixed top-[20%] right-10 w-[1px] h-32 bg-outline-variant/20 pointer-events-none"></div>
+<div class="fixed bottom-10 left-[20rem] h-[1px] w-48 bg-outline-variant/20 pointer-events-none"></div>
+<div class="fixed top-20 right-20 w-8 h-8 border border-outline-variant/20 pointer-events-none"></div>
+</body></html>
