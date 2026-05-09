@@ -1,0 +1,133 @@
+# ventures/intelpolitics/k3s/migrations/migration-job.yaml
+#
+# Job-pattern apply for 001_statements.sql DDL on intelpolitics-conductor:postgres-0.
+# Approved 2026-05-09 (option (a): convert manual exec apply to k8s Job, removes
+# Vadim from the loop). Authored under DR-24 autonomous-safe scope (kubectl apply
+# gated via --dry-run=server).
+#
+# Apply:
+#   kubectl apply -f migration-job.yaml --dry-run=server   # gate
+#   kubectl apply -f migration-job.yaml                    # live
+#   kubectl wait --for=condition=complete job/migration-001-statements \
+#     -n intelpolitics-conductor --timeout=120s
+#
+# Idempotency: SQL uses CREATE TABLE IF NOT EXISTS / CREATE INDEX IF NOT EXISTS /
+# DO $$ pg_type guard for ENUM. Re-running the Job is safe.
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: migration-001-statements
+  namespace: intelpolitics-conductor
+  labels:
+    app.kubernetes.io/component: migration
+    migration.intelpolitics/id: "001_statements"
+data:
+  001_statements.sql: |
+    -- ventures/intelpolitics/k3s/migrations/001_statements.sql
+    -- Run on intelpolitics-conductor:postgres-0 inside the namespace.
+    --
+    -- Source: Vadim's Inbox/pilot-day-1-2026-05-08/d1-intelpolitics-kickoff.md §3 (verbatim).
+    -- Approved 2026-05-09. Apply path: scp this file to olares:/tmp/, then
+    -- `kubectl exec -n intelpolitics-conductor postgres-0 -- psql -U intelpolitics_app -d intelpolitics_db -f /tmp/001_statements.sql`.
+    -- Per DR-24 §Implications + ops-dryrun-audit-2026-05-09: the apply path runs
+    -- `kubectl --dry-run=server` first; live exec runs only after the diff is reviewed.
+
+    CREATE EXTENSION IF NOT EXISTS "pgcrypto";  -- for gen_random_uuid()
+
+    -- statement_kind: 'statement' (verbal claim/position) | 'decision' (vote, signed-off policy,
+    -- executive action, or formal directive). Per kickoff plan §4.3 evaluation rule.
+    DO $$
+    BEGIN
+        IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'statement_kind') THEN
+            CREATE TYPE statement_kind AS ENUM ('statement', 'decision');
+        END IF;
+    END$$;
+
+    CREATE TABLE IF NOT EXISTS statements (
+        id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        politician      TEXT NOT NULL,
+        statement_or_decision TEXT NOT NULL,
+        source_url      TEXT NOT NULL,
+        published_date  DATE,                              -- nullable: not all sources expose a date
+        scraped_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        kind            statement_kind NOT NULL,
+        raw_html        TEXT,                              -- nullable: keep for re-extraction; drop after Phase 1 if storage pressures
+        confidence      REAL CHECK (confidence IS NULL OR (confidence >= 0 AND confidence <= 1)),
+        -- de-duplication: same politician + same statement text + same source URL = same row
+        CONSTRAINT statements_dedup_key UNIQUE (politician, statement_or_decision, source_url)
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_statements_politician     ON statements (politician);
+    CREATE INDEX IF NOT EXISTS idx_statements_kind           ON statements (kind);
+    CREATE INDEX IF NOT EXISTS idx_statements_published_date ON statements (published_date);
+    CREATE INDEX IF NOT EXISTS idx_statements_scraped_at     ON statements (scraped_at);
+
+    -- Companion table: scrape errors (for stall detection and post-mortem).
+    CREATE TABLE IF NOT EXISTS scrape_errors (
+        id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        source_url   TEXT NOT NULL,
+        politician   TEXT,
+        fetcher      TEXT NOT NULL,                       -- 'curl_cffi' | 'patchright'
+        http_status  INTEGER,
+        kind         TEXT NOT NULL,                       -- 'empty_body' | '4xx' | '5xx' | 'parse_failure' | 'extract_low_confidence'
+        detail       TEXT,
+        occurred_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_scrape_errors_kind       ON scrape_errors (kind);
+    CREATE INDEX IF NOT EXISTS idx_scrape_errors_occurred   ON scrape_errors (occurred_at);
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: migration-001-statements
+  namespace: intelpolitics-conductor
+  labels:
+    app.kubernetes.io/component: migration
+    migration.intelpolitics/id: "001_statements"
+spec:
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 86400  # auto-clean after 24h; leaves window for log review
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: migration
+        migration.intelpolitics/id: "001_statements"
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: psql
+          image: postgres:16-alpine
+          imagePullPolicy: IfNotPresent
+          # pg-creds Secret keys (mirrored from postgres StatefulSet envFrom):
+          #   POSTGRES_USER, POSTGRES_DB, POSTGRES_PASSWORD
+          # psql reads PGPASSWORD from env; we alias POSTGRES_PASSWORD -> PGPASSWORD.
+          envFrom:
+            - secretRef:
+                name: pg-creds
+          env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pg-creds
+                  key: POSTGRES_PASSWORD
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -euo pipefail
+              echo "[migration] applying 001_statements.sql to host=postgres db=$POSTGRES_DB user=$POSTGRES_USER"
+              psql -v ON_ERROR_STOP=1 -h postgres -U "$POSTGRES_USER" -d "$POSTGRES_DB" -f /sql/001_statements.sql
+              echo "[migration] DONE"
+          volumeMounts:
+            - name: sql
+              mountPath: /sql
+              readOnly: true
+      volumes:
+        - name: sql
+          configMap:
+            name: migration-001-statements
+            items:
+              - key: 001_statements.sql
+                path: 001_statements.sql
