@@ -1,0 +1,263 @@
+# intelpolitics — D.1 source inventory
+#
+# Generated from: Vadim's Inbox/pilot-day-1-2026-05-08/d1-intelpolitics-kickoff.md §1
+# Approved 2026-05-09 by Vadim (option a — approved as-is, revisit once pipeline works).
+# DR ref: framework/BKM/dr-default-autonomy-24-2026-05-09.md (Builder runs the Aider session).
+#
+# Schema:
+#   politicians:
+#     - name: <human-readable>
+#       slug: <kebab-case>          # used as DB politician value
+#       country: <ISO-2>
+#       role: <free text>
+#       sources:
+#         - url: <URL>
+#           kind: scrape-target | reference-only
+#           class: official | parliament | manifesto | press
+#           fetcher: curl_cffi | patchright   # default per §2 of the kickoff plan
+#           note: <optional free text>
+#
+# Pacing rule (SOP §1.6, restated in the kickoff brief): 3-5 s/req/host, 200 reqs/hour/host cap,
+# 5-min cooldown on 4xx. Pacing is enforced in src/scraper/fetch.py via a per-host token bucket.
+#
+# Stealth-tooling envelope (SOP §2.0.1): all 33 scrape-targets below are within Tier-0 reach
+# without IP rotation. Phase 1 needs headlines + dates + topic, not full article text.
+
+version: 1
+phase: D.1
+generated_at: 2026-05-09
+total_urls: 40
+scrape_targets: 33
+reference_only: 7
+
+politicians:
+
+  - name: Giorgia Meloni
+    slug: meloni
+    country: IT
+    role: Prime Minister
+    sources:
+      - url: https://www.governo.it/it/i-discorsi-del-presidente
+        kind: scrape-target
+        class: official
+        fetcher: curl_cffi
+        note: Official PM speeches archive.
+      - url: https://www.camera.it/leg19/410?idSeduta=&tipo=stenografico
+        kind: scrape-target
+        class: parliament
+        fetcher: curl_cffi
+        note: Camera dei deputati stenographic transcripts.
+      - url: https://www.senato.it/leg/19/BGT/Schede/Attsen/00037389.htm
+        kind: reference-only
+        class: parliament
+        fetcher: curl_cffi
+        note: Senate member page (Meloni). Provenance only.
+      - url: https://www.fratelli-italia.it/programma/
+        kind: scrape-target
+        class: manifesto
+        fetcher: curl_cffi
+        note: Fratelli d'Italia manifesto / programme. PDF + HTML.
+      - url: https://www.governo.it/it/articolo/comunicato-stampa-del-consiglio-dei-ministri
+        kind: scrape-target
+        class: official
+        fetcher: patchright
+        note: Council of Ministers press releases. Patchright per kickoff §2 host list.
+      - url: https://www.bbc.com/news/topics/c008ql15jw5t
+        kind: scrape-target
+        class: press
+        fetcher: patchright
+        note: BBC News topic page (soft-paywall preview).
+      - url: https://www.theguardian.com/world/giorgia-meloni
+        kind: scrape-target
+        class: press
+        fetcher: patchright
+        note: Guardian topic page.
+      - url: https://www.ft.com/giorgia-meloni
+        kind: scrape-target
+        class: press
+        fetcher: patchright
+        note: FT topic page (registration-walled previews).
+
+  - name: J.D. Vance
+    slug: vance
+    country: US
+    role: Vice President
+    sources:
+      - url: https://www.whitehouse.gov/administration/vice-president-vance/
+        kind: scrape-target
+        class: official
+        fetcher: curl_cffi
+        note: Official VP biography + speech archive.
+      - url: https://www.whitehouse.gov/briefings-statements/
+        kind: scrape-target
+        class: official
+        fetcher: curl_cffi
+        note: White House briefings. Filter by speaker.
+      - url: https://www.congress.gov/member/J-D-Vance/V000137
+        kind: scrape-target
+        class: parliament
+        fetcher: curl_cffi
+        note: Congress.gov record (Senate years; for prior-statement provenance).
+      - url: https://www.congress.gov/congressional-record
+        kind: scrape-target
+        class: parliament
+        fetcher: curl_cffi
+        note: Congressional Record full text (search by member).
+      - url: https://www.nytimes.com/topic/person/jd-vance
+        kind: scrape-target
+        class: press
+        fetcher: patchright
+        note: NYT topic page (public preview).
+      - url: https://www.bbc.com/news/topics/cp8z6nej1yyt
+        kind: scrape-target
+        class: press
+        fetcher: patchright
+        note: BBC News topic page for Vance.
+      - url: https://www.theguardian.com/us-news/jd-vance
+        kind: scrape-target
+        class: press
+        fetcher: patchright
+        note: Guardian topic page.
+      - url: https://rollcall.com/person/jd-vance/
+        kind: reference-only
+        class: press
+        fetcher: curl_cffi
+        note: Roll Call profile (public). Provenance only.
+
+  - name: Keir Starmer
+    slug: starmer
+    country: UK
+    role: Prime Minister
+    sources:
+      - url: https://www.gov.uk/government/people/keir-starmer
+        kind: scrape-target
+        class: official
+        fetcher: curl_cffi
+        note: Official PM page + speech feed.
+      - url: https://www.gov.uk/search/news-and-communications?people%5B%5D=keir-starmer
+        kind: scrape-target
+        class: official
+        fetcher: curl_cffi
+        note: gov.uk press releases filtered by Starmer.
+      - url: https://hansard.parliament.uk/search/contributions?searchTerm=&memberId=4514
+        kind: scrape-target
+        class: parliament
+        fetcher: curl_cffi
+        note: Hansard speeches by member id (Starmer's MP id).
+      - url: https://members.parliament.uk/member/4514/contact
+        kind: reference-only
+        class: parliament
+        fetcher: curl_cffi
+        note: UK Parliament member record. Provenance only.
+      - url: https://labour.org.uk/change/
+        kind: scrape-target
+        class: manifesto
+        fetcher: curl_cffi
+        note: Labour 2024 manifesto. HTML + PDF.
+      - url: https://www.bbc.com/news/topics/cm9k1g34lj2t
+        kind: scrape-target
+        class: press
+        fetcher: patchright
+        note: BBC News topic page for Starmer.
+      - url: https://www.theguardian.com/politics/keir-starmer
+        kind: scrape-target
+        class: press
+        fetcher: patchright
+        note: Guardian topic page.
+      - url: https://www.ft.com/keir-starmer
+        kind: scrape-target
+        class: press
+        fetcher: patchright
+        note: FT topic page.
+
+  - name: Friedrich Merz
+    slug: merz
+    country: DE
+    role: Chancellor
+    sources:
+      - url: https://www.bundesregierung.de/breg-de/bundeskanzler
+        kind: scrape-target
+        class: official
+        fetcher: curl_cffi
+        note: Federal Chancellor's office.
+      - url: https://www.bundeskanzler.de/bk-de/aktuelles/reden
+        kind: scrape-target
+        class: official
+        fetcher: curl_cffi
+        note: Chancellor's speeches feed.
+      - url: https://www.bundestag.de/dokumente/protokolle/plenarprotokolle
+        kind: scrape-target
+        class: parliament
+        fetcher: curl_cffi
+        note: Bundestag plenary protocols (full-text).
+      - url: https://www.bundestag.de/abgeordnete/biografien/M/merz_friedrich-525362
+        kind: reference-only
+        class: parliament
+        fetcher: curl_cffi
+        note: Bundestag biographical record. Provenance only.
+      - url: https://www.cdu.de/grundsatzprogramm
+        kind: scrape-target
+        class: manifesto
+        fetcher: curl_cffi
+        note: CDU principles programme / manifesto. HTML + PDF.
+      - url: https://www.dw.com/en/friedrich-merz/t-67042892
+        kind: scrape-target
+        class: press
+        fetcher: curl_cffi
+        note: Deutsche Welle English topic page.
+      - url: https://www.bbc.com/news/topics/c2vdnvjvz0vt
+        kind: scrape-target
+        class: press
+        fetcher: patchright
+        note: BBC News topic page for Merz.
+      - url: https://www.theguardian.com/world/friedrich-merz
+        kind: scrape-target
+        class: press
+        fetcher: patchright
+        note: Guardian topic page.
+
+  - name: Ursula von der Leyen
+    slug: von-der-leyen
+    country: EU
+    role: Commission President
+    sources:
+      - url: https://commission.europa.eu/about/president_en
+        kind: scrape-target
+        class: official
+        fetcher: curl_cffi
+        note: Commission President's office.
+      - url: https://ec.europa.eu/commission/presscorner/api/documents
+        kind: scrape-target
+        class: official
+        fetcher: curl_cffi
+        note: Commission press-release JSON API (search by speaker).
+      - url: https://www.europarl.europa.eu/plenary/en/debates-video.html
+        kind: scrape-target
+        class: parliament
+        fetcher: curl_cffi
+        note: European Parliament plenary debates (transcripts).
+      - url: https://state-of-the-union.ec.europa.eu/index_en
+        kind: scrape-target
+        class: official
+        fetcher: curl_cffi
+        note: State of the Union speeches archive.
+      - url: https://www.europarl.europa.eu/meps/en/96780/URSULA_VON+DER+LEYEN/home
+        kind: reference-only
+        class: parliament
+        fetcher: curl_cffi
+        note: EP member record (her MEP years; provenance only).
+      - url: https://www.bbc.com/news/topics/c2074yp64g6t
+        kind: scrape-target
+        class: press
+        fetcher: patchright
+        note: BBC News topic page for von der Leyen.
+      - url: https://www.politico.eu/tag/ursula-von-der-leyen/
+        kind: scrape-target
+        class: press
+        fetcher: patchright
+        note: POLITICO Europe topic page.
+      - url: https://www.theguardian.com/world/ursula-von-der-leyen
+        kind: scrape-target
+        class: press
+        fetcher: patchright
+        note: Guardian topic page.

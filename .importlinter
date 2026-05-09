@@ -1,0 +1,47 @@
+; intelpolitics — import-linter contracts
+;
+; Enforces the local-LLM-only invariant per DR-25 + the brief in
+; ventures/intelpolitics/aider-briefs/d1-kickoff.md.
+;
+; Runtime gate: `lint-imports` (from the `import-linter` PyPI package).
+; CI gate: invoked by `.github/workflows/ci.yml` (Builder authors when CI
+; pipeline lands; until then this file is the single source of truth and is
+; runnable locally via `pipx run import-linter` from the venture root).
+;
+; Drift detection: if a future commit adds `anthropic`, `anthropic.types`,
+; `claude_sdk`, or any other Claude-SDK import anywhere under
+; `ventures/intelpolitics/src/` or `ventures/intelpolitics/tests/`, this
+; contract fails. Local LLMs (Olares Ollama) only.
+
+[importlinter]
+root_packages =
+    src
+    tests
+
+[importlinter:contract:no-anthropic-sdk]
+name = No Anthropic / Claude SDK imports (DR-25 local-LLM-only invariant)
+type = forbidden
+source_modules =
+    src
+    tests
+forbidden_modules =
+    anthropic
+    anthropic.types
+    anthropic_bedrock
+    anthropic_vertex
+    claude_sdk
+    claude
+ignore_imports =
+    ; (none — the gate is intentionally strict)
+
+[importlinter:contract:no-openai-sdk]
+name = No OpenAI SDK imports (local-LLM-only invariant — keeps the gate symmetrical)
+type = forbidden
+source_modules =
+    src
+    tests
+forbidden_modules =
+    openai
+    openai.types
+ignore_imports =
+    ; (none)
