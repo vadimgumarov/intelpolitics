@@ -17,6 +17,7 @@
 root_packages =
     src
     tests
+include_external_packages = True
 
 [importlinter:contract:no-anthropic-sdk]
 name = No Anthropic / Claude SDK imports (DR-25 local-LLM-only invariant)
@@ -26,7 +27,6 @@ source_modules =
     tests
 forbidden_modules =
     anthropic
-    anthropic.types
     anthropic_bedrock
     anthropic_vertex
     claude_sdk
@@ -42,6 +42,5 @@ source_modules =
     tests
 forbidden_modules =
     openai
-    openai.types
 ignore_imports =
     ; (none)
