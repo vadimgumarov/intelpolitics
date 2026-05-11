@@ -1,0 +1,113 @@
+# ventures/intelpolitics/k8s/scrape-job.yaml
+#
+# One-shot Kubernetes Job: run the intelpolitics scrape pipeline INSIDE the
+# Olares cluster (no Mac involvement at runtime).
+#
+# Pipeline summary:
+#   gov.uk Search API -> ~95 Starmer speech metadata records ->
+#   curl_cffi fetch each speech page (3s pacing) ->
+#   BeautifulSoup excerpt body ->
+#   Olares Ollama gemma4:e4b topic-tag (in-cluster call) ->
+#   INSERT into statements via in-cluster postgres service.
+#
+# Pre-reqs (Ops owns):
+#   - intelpolitics-conductor namespace exists.
+#   - Secret/pg-creds in namespace with keys POSTGRES_DB / POSTGRES_USER /
+#     POSTGRES_PASSWORD (per existing postgres StatefulSet envFrom).
+#   - Postgres service `postgres` in namespace, accepting connections on 5432.
+#   - statements table exists (applied via the migration Job at
+#     k3s/migrations/migration-job.yaml).
+#   - Olares Ollama reachable at ollama.ollamaserver-shared.svc.cluster.local:11434
+#     with the `gemma4:e4b` model loaded (verified at pre-flight by the entrypoint).
+#   - Image `intelpolitics-scraper:2026-05-10` built on Olares via nerdctl into
+#     the k8s.io containerd namespace (see Dockerfile header).
+#
+# Apply:
+#   kubectl apply -f scrape-job.yaml -n intelpolitics-conductor --dry-run=server
+#   kubectl apply -f scrape-job.yaml -n intelpolitics-conductor
+#
+# Observe:
+#   kubectl get job/intelpolitics-scrape -n intelpolitics-conductor -w
+#   kubectl logs -f job/intelpolitics-scrape -n intelpolitics-conductor
+#
+# Cleanup:
+#   kubectl delete job intelpolitics-scrape -n intelpolitics-conductor
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: intelpolitics-scrape
+  namespace: intelpolitics-conductor
+  labels:
+    app.kubernetes.io/name: intelpolitics-scrape
+    app.kubernetes.io/component: pipeline
+    app.kubernetes.io/part-of: intelpolitics
+    pipeline.intelpolitics/source: gov-uk-search-api
+    pipeline.intelpolitics/politician: starmer
+spec:
+  backoffLimit: 2
+  ttlSecondsAfterFinished: 86400        # auto-clean after 24h; leaves window for log review
+  # Single completion — the pipeline ranges over 95 rows internally; not a parallel Job.
+  completions: 1
+  parallelism: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: intelpolitics-scrape
+        app.kubernetes.io/component: pipeline
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: scrape
+          image: intelpolitics-scraper:2026-05-10
+          imagePullPolicy: Never        # DR-25 supply-chain: image lives in cluster's containerd only
+          # ----------------------------------------------------------------------
+          # Credentials: POSTGRES_DB / POSTGRES_USER / POSTGRES_PASSWORD come from
+          # pg-creds. The entrypoint assembles POSTGRES_URL from these + the
+          # POSTGRES_HOST/POSTGRES_PORT envs below — no plain-text DSN crosses
+          # the manifest boundary.
+          # ----------------------------------------------------------------------
+          envFrom:
+            - secretRef:
+                name: pg-creds
+          env:
+            - name: POSTGRES_HOST
+              value: "postgres"
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: OLLAMA_BASE_URL
+              value: "http://ollama.ollamaserver-shared.svc.cluster.local:11434"
+            - name: OLLAMA_MODEL
+              value: "gemma4:e4b"
+            - name: OLLAMA_TIMEOUT_SEC
+              value: "60"
+            - name: PIPELINE_MAX_ROWS
+              value: "95"
+            - name: PIPELINE_POLITICIAN_SLUG
+              value: "starmer"
+            - name: PIPELINE_METRICS_CSV
+              value: "/tmp/metrics.csv"
+            - name: PACE_SEC
+              value: "3.0"
+            - name: LOG_LEVEL
+              value: "INFO"
+          resources:
+            # Conservative: the pipeline is I/O-bound (HTTP + Postgres + Ollama).
+            # Memory budget covers psycopg + curl_cffi + bs4 working set; CPU is
+            # bursty during BeautifulSoup parsing.
+            requests:
+              memory: "256Mi"
+              cpu: "200m"
+            limits:
+              memory: "1Gi"
+              cpu: "1"
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        # /tmp is emptyDir so the metrics CSV survives within the pod for the
+        # duration of the Job but does not require a PVC. Ops can extract it
+        # with `kubectl cp` while the pod is in `Completed` state if needed.
+        - name: tmp
+          emptyDir:
+            sizeLimit: 64Mi

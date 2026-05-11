@@ -1,0 +1,112 @@
+# ventures/intelpolitics/k8s/scrape-cronjob.yaml
+#
+# CronJob: nightly multi-politician scrape.
+#
+# Schedule: 22:00 America/Los_Angeles (PDT/PST). Encoded via k8s 1.27+
+# spec.timeZone (k3s 1.33 confirmed). Falls back gracefully to UTC if the
+# field is rejected — the comment below documents the UTC offset for ops.
+#
+# Pipeline:
+#   For each politician in POLITICIANS (default: all 5):
+#     - resolve country strategy (gov.uk search API for Starmer; per-country
+#       best-effort listing scrapes for the rest)
+#     - Ollama gemma4:e4b topic tag (in-cluster)
+#     - INSERT into statements (Postgres in-cluster)
+#   Per-politician metrics summary printed to stdout.
+#
+# Pre-reqs (verified 2026-05-10):
+#   - intelpolitics-conductor namespace exists.
+#   - pg-creds secret + postgres service present.
+#   - Ollama reachable at ollama.ollamaserver-shared.svc.cluster.local:11434.
+#   - Image intelpolitics-scraper:2026-05-10-multi present in containerd k8s.io.
+#
+# DR-24 dry-run gate:
+#   kubectl apply -f scrape-cronjob.yaml -n intelpolitics-conductor --dry-run=server
+# Live apply:
+#   kubectl apply -f scrape-cronjob.yaml -n intelpolitics-conductor
+# Trigger one-off run NOW (no need to wait for schedule):
+#   kubectl create job --from=cronjob/intelpolitics-scrape-nightly \
+#     intelpolitics-scrape-manual-$(date -u +%Y%m%d-%H%M) \
+#     -n intelpolitics-conductor
+# Observe:
+#   kubectl get cronjob,jobs -n intelpolitics-conductor
+#   kubectl logs -f job/<job-name> -n intelpolitics-conductor
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: intelpolitics-scrape-nightly
+  namespace: intelpolitics-conductor
+  labels:
+    app.kubernetes.io/name: intelpolitics-scrape-nightly
+    app.kubernetes.io/component: pipeline
+    app.kubernetes.io/part-of: intelpolitics
+    pipeline.intelpolitics/source: multi-politician
+spec:
+  # 22:00 PDT every day. PDT = UTC-7, so this fires at 05:00 UTC.
+  schedule: "0 22 * * *"
+  timeZone: "America/Los_Angeles"
+  # If the cluster is down at 22:00 PDT we still want the run within 6h.
+  startingDeadlineSeconds: 21600
+  concurrencyPolicy: Forbid               # one scrape at a time
+  successfulJobsHistoryLimit: 7           # keep a week of Completed for audit
+  failedJobsHistoryLimit: 5
+  jobTemplate:
+    metadata:
+      labels:
+        app.kubernetes.io/name: intelpolitics-scrape-nightly
+        app.kubernetes.io/component: pipeline
+    spec:
+      backoffLimit: 2
+      ttlSecondsAfterFinished: 604800     # 7 days; lines up with successful-history window
+      completions: 1
+      parallelism: 1
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: intelpolitics-scrape-nightly
+            app.kubernetes.io/component: pipeline
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: scrape
+              image: intelpolitics-scraper:2026-05-10-multi
+              imagePullPolicy: Never      # DR-25 supply-chain: containerd-only image
+              envFrom:
+                - secretRef:
+                    name: pg-creds
+              env:
+                - name: POSTGRES_HOST
+                  value: "postgres"
+                - name: POSTGRES_PORT
+                  value: "5432"
+                - name: OLLAMA_BASE_URL
+                  value: "http://ollama.ollamaserver-shared.svc.cluster.local:11434"
+                - name: OLLAMA_MODEL
+                  value: "gemma4:e4b"
+                - name: OLLAMA_TIMEOUT_SEC
+                  value: "60"
+                - name: PIPELINE_MODE
+                  value: "multi"
+                - name: POLITICIANS
+                  value: "starmer,vance,meloni,merz,von-der-leyen"
+                - name: PIPELINE_METRICS_CSV
+                  value: "/tmp/metrics.csv"
+                - name: PACE_SEC
+                  value: "3.0"
+                - name: LOG_LEVEL
+                  value: "INFO"
+              resources:
+                requests:
+                  memory: "256Mi"
+                  cpu: "200m"
+                limits:
+                  memory: "1Gi"
+                  cpu: "1"
+              volumeMounts:
+                - name: tmp
+                  mountPath: /tmp
+          volumes:
+            - name: tmp
+              emptyDir:
+                sizeLimit: 64Mi

@@ -1,0 +1,103 @@
+# ventures/intelpolitics/k8s/networkpolicy.yaml
+#
+# NetworkPolicy: default-deny-all with targeted egress allowlist.
+# Namespace: intelpolitics-conductor
+# Applies to: ALL pods in the namespace (podSelector: {})
+#
+# Egress allowed:
+#   1. 0.0.0.0/0:443      — HTTPS for gov.uk and future public-API sources
+#   2. CoreDNS UDP+TCP/53 — cluster-internal name resolution via kube-dns
+#   3. ollamaserver-shared:11434 (io.kompose.service=ollama) — in-cluster Ollama
+#   4. postgres:5432 in same namespace (app=postgres) — in-cluster Postgres write
+#
+# Egress denied: everything else (default-deny enforced by absence).
+# Ingress: deny-all (Job pods accept no inbound connections).
+#
+# Selector verification (live kubectl via SSH to Olares, 2026-05-10):
+#   - Ollama svc selector: `io.kompose.service: ollama`
+#     (from `kubectl get svc ollama -n ollamaserver-shared -o yaml`)
+#   - Postgres svc selector: `app: postgres`
+#     (from `kubectl get svc postgres -n intelpolitics-conductor -o yaml`)
+#   - ollamaserver-shared namespace has label kubernetes.io/metadata.name: ollamaserver-shared
+#     (standard auto-label; namespaceSelector below targets it).
+#
+# DR-24 dry-run gate:
+#   kubectl apply -f networkpolicy.yaml -n intelpolitics-conductor --dry-run=server
+# Apply:
+#   kubectl apply -f networkpolicy.yaml -n intelpolitics-conductor
+# Verify (post-apply):
+#   kubectl get networkpolicy -n intelpolitics-conductor
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-with-allowlist
+  namespace: intelpolitics-conductor
+  labels:
+    app.kubernetes.io/component: network-security
+    app.kubernetes.io/part-of: intelpolitics
+spec:
+  # Applies to ALL pods in this namespace.
+  podSelector: {}
+
+  policyTypes:
+    - Ingress
+    - Egress
+
+  # ── INGRESS ──────────────────────────────────────────────────────────────
+  # No ingress rules = deny all inbound. Job pods do not accept connections.
+  ingress: []
+
+  # ── EGRESS ───────────────────────────────────────────────────────────────
+  egress:
+    # ── Rule 1: HTTPS to public internet (gov.uk APIs, public sources) ──
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            # Exclude cluster-internal RFC-1918 ranges so this rule does not
+            # inadvertently override the deny-default for internal traffic.
+            except:
+              - 10.0.0.0/8
+              - 172.16.0.0/12
+              - 192.168.0.0/16
+      ports:
+        - protocol: TCP
+          port: 443
+
+    # ── Rule 2: CoreDNS — UDP and TCP port 53 ──
+    # kube-dns sits in kube-system; namespaceSelector targets it without
+    # hard-coding a ClusterIP that may change on cluster upgrade.
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+
+    # ── Rule 3: Ollama inference — ollamaserver-shared:11434 ──
+    # Selector io.kompose.service=ollama verified live via SSH to Olares 2026-05-10.
+    # namespaceSelector + podSelector are ANDed when combined in the same list entry.
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ollamaserver-shared
+          podSelector:
+            matchLabels:
+              io.kompose.service: ollama
+      ports:
+        - protocol: TCP
+          port: 11434
+
+    # ── Rule 4: Postgres — same namespace, port 5432 ──
+    # Service name `postgres` in intelpolitics-conductor; pod label app=postgres
+    # is the Olares stock StatefulSet convention (confirmed by runtime host=postgres).
+    - to:
+        - podSelector:
+            matchLabels:
+              app: postgres
+      ports:
+        - protocol: TCP
+          port: 5432
