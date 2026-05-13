@@ -10,6 +10,7 @@ dependencies = [
     "tenacity>=9.0",
     "curl-cffi>=0.7",
     "beautifulsoup4>=4.12",
+    "openpyxl>=3.1",
     "patchright>=1.40",
 ]
 

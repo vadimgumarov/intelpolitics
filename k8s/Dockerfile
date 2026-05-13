@@ -6,7 +6,7 @@
 #
 # Build (Ops, on Olares):
 #   nerdctl --namespace=k8s.io build \
-#     -t intelpolitics-scraper:2026-05-10 \
+#     -t intelpolitics-scraper:2026-05-12-phase-c \
 #     -f /tmp/intelpolitics-build/Dockerfile \
 #     /tmp/intelpolitics-build/
 #
@@ -54,12 +54,14 @@ RUN pip install --no-cache-dir --upgrade pip \
         "psycopg[binary]>=3.2" \
         "tenacity>=9.0" \
         "curl-cffi>=0.7" \
-        "beautifulsoup4>=4.12"
+        "beautifulsoup4>=4.12" \
+        "openpyxl>=3.1"
 
 # Copy source. We pull only what the pipeline needs at runtime: src/.
 # We deliberately exclude the Next.js app, components, fixtures, tests.
 COPY src/ /app/src/
 COPY sources.yaml /app/sources.yaml
+COPY sources.v2.yaml /app/sources.v2.yaml
 
 # Copy the in-cluster entrypoint.
 COPY k8s/entrypoint.sh /app/entrypoint.sh

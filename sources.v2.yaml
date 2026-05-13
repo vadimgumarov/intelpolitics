@@ -1,0 +1,157 @@
+# intelpolitics - sources.v2.yaml
+#
+# Generated 2026-05-12 (Builder, Phase B Starmer scope).
+# Supersedes (for Starmer only) the politician-direct entries in sources.yaml.
+# Other 4 politicians retain sources.yaml entries until their Phase B fires.
+#
+# Canon: framework/BKM/dr-source-quality-canon-2026-05-12.md
+# Plan:  /Users/vadim/.claude/plans/lucky-scribbling-neumann.md §3.4 Phase B
+#
+# Schema (per DR rule 2 "Tier-at-registration" + rule 4 "Action-class tag" +
+# rule 5 "SLA declaration" + addendum 2026-05-12 "subject_role + supporting_metadata"):
+#   politicians:
+#     <slug>:
+#       geography: <ISO-2 or 'EU'>
+#       sources:
+#         - id: <kebab-case-source-id>
+#           tier: T1 | T2 | T3 | T4              # required (DR rule 2)
+#           action_class: vote | bill_intro | policy_publish | lobby_filing | statement_official | talking_point | supporting_metadata
+#                                                # (supporting_metadata added 2026-05-12 addendum — decorative, never load-bearing for verdicts)
+#           default_subject_role: lobbied | lobbyist | voter | sponsor | speaker | author    # optional
+#                                                # If declared, ingest applies to every emitted row from this source unless parser overrides.
+#                                                # MANDATORY at row level (CHECK constraint) for action_class=lobby_filing.
+#                                                # Per addendum 2026-05-12.
+#           endpoint: <URL>
+#           auth: api_key | oauth | none | login_required | ua_required
+#           auth_env_var: <env var name if api_key>
+#           rate_limit: <free text - docs-cited>
+#           refresh_cadence: <observed>
+#           last_verified: YYYY-MM-DD
+#           sample_response: <inline minified excerpt>
+#           gotchas: <free text>
+
+version: 2
+generated_at: 2026-05-12
+scope: starmer-only
+supersedes_for: [starmer]
+notes:
+  - Source-quality canon DR 2026-05-12 locks T1-first ingest, tier-at-registration,
+    action_class tagging, SLA per source.
+  - Addendum 2026-05-12 (BKM/dr-source-quality-canon-addendum-2026-05-12.md) extends
+    action_class enum with supporting_metadata (decorative, never load-bearing) and
+    adds subject_role column to the rows table (enum {lobbied, lobbyist, voter,
+    sponsor, speaker, author}; MANDATORY for action_class=lobby_filing).
+  - TWFY does not expose individual MP voting records via its public REST API.
+    Voting data routes via UK Parliament Commons Votes Service API instead (also T1,
+    no auth). The Per-politician T1 target map in the DR §"Per-politician" names
+    "TheyWorkForYou API" + "UK Parliament Open Data" for UK voting; Commons Votes
+    Service is the UK Parliament Open Data endpoint that materialises that target.
+  - >-
+    UK Lobbying Register is HTML+XLSX only (no API). Quarterly returns published
+    as XLSX on registrarofconsultantlobbyists.org.uk/wp-content/uploads/<yyyy>/<mm>/.
+    Per DR §"API > HTML preference" — API-where-T1-exists. Here no T1 API exists,
+    so XLSX is the authoritative path and acceptable.
+
+politicians:
+
+  starmer:
+    geography: UK
+    member_ids:
+      uk_parliament: 4514          # MemberId on members-api.parliament.uk / Hansard / Commons Votes
+      twfy_person: 25916           # mySociety person id (Keir Starmer; verify on first getMP call)
+      constituency: Holborn and St Pancras
+      constituency_id: 4105        # membershipFromId
+    sources:
+
+      - id: commons-votes-divisions
+        tier: T1
+        action_class: vote
+        endpoint: https://commonsvotes-api.parliament.uk/data/divisions.json/search
+        endpoint_detail: https://commonsvotes-api.parliament.uk/data/division/{divisionId}.json
+        auth: none
+        rate_limit: "Not published; UK Parliament Open Data is conservative-friendly. Default to 1 req/sec/host self-imposed."
+        refresh_cadence: "Per sitting day; division publication typically within 12-24h of vote."
+        last_verified: 2026-05-12
+        sample_response: '{"DivisionId":2347,"Date":"2026-04-28T18:13:00","Number":512,"Title":"Privilege","AyeCount":223,"NoCount":335,"AyeTellers":[...],"NoTellers":[...],"Ayes":[{"MemberId":...}],"Noes":[{"MemberId":...}]}'
+        gotchas:
+          - "/search endpoint returns Ayes:[] and Noes:[] empty — need to call /data/division/{id}.json to get the per-member vote lists."
+          - "Starmer (PM) votes less frequently than backbenchers — many divisions will show him in NoVoteRecorded[] or absent. Treat absence as data, not error."
+          - "Use queryParameters.memberId=4514 on /search to narrow to divisions where Starmer voted; corroborate with /division/{id}.json membership check."
+        endpoint_swagger: https://commonsvotes-api.parliament.uk/swagger/ui/index
+
+      - id: hansard-search-contributions
+        tier: T1
+        action_class: statement_official
+        endpoint: https://hansard-api.parliament.uk/search.json
+        endpoint_member_contribs: https://hansard-api.parliament.uk/debates/memberdebatecontributions/{memberId}.json
+        auth: none
+        rate_limit: "Not published. Self-impose 1 req/sec/host per intelpolitics SOP §1.6."
+        refresh_cadence: "Published within 3 hours of sitting (Hansard policy). Final-text corrections rolled in within ~24h."
+        last_verified: 2026-05-12
+        sample_response: '{"TotalMembers":1,"TotalContributions":5,"Members":[{"MemberId":4514,"DisplayAs":"Sir Keir Starmer","Party":"Labour","House":"Commons"}],"Contributions":[{"MemberName":"...","MemberId":4514,"AttributedTo":"...","ContributionExtId":"...","ContributionText":"...","SittingDate":"2026-04-24T00:00:00","Section":"Commons Chamber","House":"Commons"}]}'
+        gotchas:
+          - "search.json returns contributions matching the term Keir Starmer regardless of speaker — many matches will be other MPs mentioning him, not statements by him."
+          - "For statements BY Starmer, use /debates/memberdebatecontributions/4514.json with date range; that endpoint filters to contributions where he is the speaker."
+          - "Returned text contains \\r\\n line breaks; normalize on ingest."
+          - "Authoritative over TheyWorkForYou for plenary speech: TWFY republishes Hansard data with a lag and applies its own debate-grouping; for T1 ground truth use Hansard direct."
+        endpoint_swagger: https://hansard-api.parliament.uk/swagger/ui/index
+
+      - id: members-api-membership
+        tier: T1
+        action_class: supporting_metadata        # Locked 2026-05-12 by addendum DR — identity/role rows decorate scorecards, never load-bearing for verdicts. Scoring engine filters via WHERE action_class <> 'supporting_metadata'.
+        endpoint: https://members-api.parliament.uk/api/Members/Search
+        endpoint_detail: https://members-api.parliament.uk/api/Members/{memberId}
+        auth: none
+        rate_limit: "Not published. Self-impose 1 req/sec/host."
+        refresh_cadence: "Realtime for membership/role changes; biographical edits batched."
+        last_verified: 2026-05-12
+        sample_response: '{"items":[{"value":{"id":4514,"nameDisplayAs":"Sir Keir Starmer","nameFullTitle":"Rt Hon Sir Keir Starmer MP","latestParty":{"id":15,"name":"Labour"},"latestHouseMembership":{"membershipFrom":"Holborn and St Pancras","membershipFromId":4105,"house":1,"membershipStartDate":"2015-05-07T00:00:00","membershipStatus":{"statusIsActive":true,"statusDescription":"Current Member"}}}}]}'
+        gotchas:
+          - "Use this endpoint to RESOLVE Starmer's memberId at startup, not hard-code 4514 — defensive against ID changes (rare but possible on de-selection/re-election cycles)."
+          - "action_class=supporting_metadata per addendum DR 2026-05-12: identity/role data is T1 by source authority but decorative by use. Scorecard renderer displays in header/sidebar/context strip only; verdict computation excludes these rows."
+
+      - id: theyworkforyou-getmp
+        tier: T1
+        action_class: statement_official
+        endpoint: https://www.theyworkforyou.com/api/getMP
+        endpoint_debates: https://www.theyworkforyou.com/api/getDebates
+        endpoint_quota: https://www.theyworkforyou.com/api/getQuota
+        auth: api_key
+        auth_env_var: TWFY_API_KEY
+        auth_registration_url: https://www.theyworkforyou.com/api/key
+        rate_limit: "Free tier: 1000 calls/day. Paid tiers up to £300/mo unlimited. 50% charity discount."
+        refresh_cadence: "Mirrors Hansard with a 6-24h lag for debate ingest. Member info realtime."
+        last_verified: 2026-05-12-pending-api-key
+        sample_response: "PENDING - key registration required. getMP returns {full_name, party, constituency, person_id, image, office, ...}."
+        gotchas:
+          - "REGISTRATION REQUIRED before validation. Vadim needs to sign up at https://www.theyworkforyou.com/api/key and place key in TWFY_API_KEY env var. Until then this source is documented but not validated."
+          - "TWFY does NOT expose individual MP voting records via REST API. Voting routes via Commons Votes Service instead (see commons-votes-divisions above)."
+          - "TWFY's value-add over raw Hansard: their getMPInfo includes aggregated rebellion %, expense summary, and policy stance scores — useful as supplementary (T1-quality because backed by mySociety's gov-data ingest) but not the primary voting source."
+          - "If TWFY free quota becomes binding, swap to Hansard + Commons Votes direct (both no-auth, no quota)."
+        registration_steps_for_vadim:
+          - "Visit https://www.theyworkforyou.com/api/key"
+          - "Sign up with email (charitable project disclosure halves the rate; intelpolitics qualifies if non-commercial)"
+          - "Receive API key by email within minutes"
+          - "Set TWFY_API_KEY env var in Olares secret + local .env"
+          - "Builder re-runs the validation on this source and updates last_verified"
+
+      - id: lobbying-register-quarterly-xlsx
+        tier: T1
+        action_class: lobby_filing
+        default_subject_role: lobbied            # Locked 2026-05-12 by addendum DR — every filing in this register names the LOBBIED official (Starmer / ministers / named officials), never a lobbyist-by-the-politician. Pipeline applies this default to every emitted row; parser MAY override per-row if a future filing class names a different role.
+        endpoint: https://registrarofconsultantlobbyists.org.uk/publications/
+        endpoint_pattern: https://registrarofconsultantlobbyists.org.uk/wp-content/uploads/{yyyy}/{mm}/Quarterly-Return-Client-Data-{quarter-months}.xlsx
+        endpoint_search_ui: https://orcl.my.site.com/CLR_Search
+        auth: ua_required
+        rate_limit: "Not published. Cloudflare WAF rejects default curl UA — must send a real-browser User-Agent header."
+        refresh_cadence: "Quarterly (Q1 published April, Q2 published July, Q3 published October, Q4 published January). Within 30 days of quarter close per statute."
+        last_verified: 2026-05-12
+        sample_response: "XLSX binary, content-type application/vnd.openxmlformats-officedocument.spreadsheetml.sheet. Q1 2026 file at /wp-content/uploads/2026/04/Quarterly-Return-Client-Data-January-March.xlsx, 44638 bytes, last-modified 2026-04-25. Columns include: lobbyist organisation, client name, lobbying activity description, period covered."
+        gotchas:
+          - "NOT an API. Quarterly XLSX downloads only. The Salesforce-backed search at orcl.my.site.com/CLR_Search is HTML-only and not scraping-friendly (JS-rendered Visualforce)."
+          - "MUST send User-Agent header — Cloudflare returns 403 for default curl/python-requests UA. Use a real-browser UA string."
+          - "Index publications page first to discover the current quarter's XLSX URL; URL pattern is consistent but quarter-months slug varies (e.g. 'January-March', 'April-June')."
+          - "Filings name government officials lobbied (e.g. PM, ministers). Searching by Starmer name returns filings that named-lobbied him. He is the LOBBIED entity, not the lobbyist — semantics matter for scorecard framing."
+          - "Per DR §'API > HTML preference': no T1 API exists for this data class; XLSX is the authoritative T1 path. Acceptable."
+          - "Historical quarters live in /wp-content/uploads/YYYY/MM/ — backfill is straightforward via the publications page index."
+        ingest_pattern_suggestion: "Scheduled monthly check of publications page for new quarterly XLSX; download, openpyxl-parse, normalize to lobby_filing rows."

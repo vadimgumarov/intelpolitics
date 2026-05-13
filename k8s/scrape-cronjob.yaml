@@ -1,36 +1,46 @@
 # ventures/intelpolitics/k8s/scrape-cronjob.yaml
 #
-# CronJob: nightly multi-politician scrape.
+# CronJob: nightly Phase C Starmer T1 ingest.
+#
+# Phase C (2026-05-12): rewritten to fire the Starmer-only T1 pipeline
+# (4 strategies — Hansard / Commons Votes / Lobbying-Register / Members API)
+# instead of the legacy multi-politician T4 scrape. Other 4 politicians
+# wait for Phase D per Vadim's 2026-05-12 lock.
 #
 # Schedule: 22:00 America/Los_Angeles (PDT/PST). Encoded via k8s 1.27+
 # spec.timeZone (k3s 1.33 confirmed). Falls back gracefully to UTC if the
 # field is rejected — the comment below documents the UTC offset for ops.
 #
 # Pipeline:
-#   For each politician in POLITICIANS (default: all 5):
-#     - resolve country strategy (gov.uk search API for Starmer; per-country
-#       best-effort listing scrapes for the rest)
-#     - Ollama gemma4:e4b topic tag (in-cluster)
-#     - INSERT into statements (Postgres in-cluster)
-#   Per-politician metrics summary printed to stdout.
+#   1. initContainer: wait for postgres-0 reachability (per Ops Phase A finding).
+#   2. main: python -m src.pipelines.phase_c_starmer
+#      - validate sources.v2.yaml (DR rule 2 startup gate)
+#      - upsert each source into the `sources` table
+#      - run each strategy in order; insert rows with content-hash dedup
+#      - print PHASE_C_SUMMARY JSON to stdout
 #
-# Pre-reqs (verified 2026-05-10):
+# Pre-reqs (verified 2026-05-12):
 #   - intelpolitics-conductor namespace exists.
 #   - pg-creds secret + postgres service present.
-#   - Ollama reachable at ollama.ollamaserver-shared.svc.cluster.local:11434.
-#   - Image intelpolitics-scraper:2026-05-10-multi present in containerd k8s.io.
+#   - Image intelpolitics-scraper:2026-05-12-phase-c built (Ops to build).
+#   - Migration 002_sources_v2.sql applied (Builder to coordinate with Ops).
 #
 # DR-24 dry-run gate:
 #   kubectl apply -f scrape-cronjob.yaml -n intelpolitics-conductor --dry-run=server
 # Live apply:
 #   kubectl apply -f scrape-cronjob.yaml -n intelpolitics-conductor
-# Trigger one-off run NOW (no need to wait for schedule):
+# Suspend (current default):
+#   kubectl patch cronjob intelpolitics-scrape-nightly -n intelpolitics-conductor \
+#     -p '{"spec":{"suspend":true}}'
+# Resume after Phase C verification passes:
+#   kubectl patch cronjob intelpolitics-scrape-nightly -n intelpolitics-conductor \
+#     -p '{"spec":{"suspend":false}}'
+# Trigger one-off run NOW (manual scrape per Phase C plan C.4):
 #   kubectl create job --from=cronjob/intelpolitics-scrape-nightly \
-#     intelpolitics-scrape-manual-$(date -u +%Y%m%d-%H%M) \
-#     -n intelpolitics-conductor
+#     --name=phase-c-first-scrape -n intelpolitics-conductor
 # Observe:
 #   kubectl get cronjob,jobs -n intelpolitics-conductor
-#   kubectl logs -f job/<job-name> -n intelpolitics-conductor
+#   kubectl logs -f job/phase-c-first-scrape -n intelpolitics-conductor
 ---
 apiVersion: batch/v1
 kind: CronJob
@@ -41,8 +51,12 @@ metadata:
     app.kubernetes.io/name: intelpolitics-scrape-nightly
     app.kubernetes.io/component: pipeline
     app.kubernetes.io/part-of: intelpolitics
-    pipeline.intelpolitics/source: multi-politician
+    pipeline.intelpolitics/source: phase-c-starmer
+    pipeline.intelpolitics/phase: "C"
 spec:
+  # Suspended until Phase C verification passes (DR Q-SRC-3).
+  # Lift via: kubectl patch ... -p '{"spec":{"suspend":false}}'
+  suspend: true
   # 22:00 PDT every day. PDT = UTC-7, so this fires at 05:00 UTC.
   schedule: "0 22 * * *"
   timeZone: "America/Los_Angeles"
@@ -56,8 +70,12 @@ spec:
       labels:
         app.kubernetes.io/name: intelpolitics-scrape-nightly
         app.kubernetes.io/component: pipeline
+        pipeline.intelpolitics/phase: "C"
     spec:
-      backoffLimit: 2
+      # Phase C backoff bump per plan C.4: 4 (was 2). Allows transient
+      # network/api hiccups on Hansard / Commons Votes / Lobbying Register
+      # to retry without surfacing as Job failure.
+      backoffLimit: 4
       ttlSecondsAfterFinished: 604800     # 7 days; lines up with successful-history window
       completions: 1
       parallelism: 1
@@ -66,12 +84,15 @@ spec:
           labels:
             app.kubernetes.io/name: intelpolitics-scrape-nightly
             app.kubernetes.io/component: pipeline
+            pipeline.intelpolitics/phase: "C"
         spec:
           restartPolicy: OnFailure
-          containers:
-            - name: scrape
-              image: intelpolitics-scraper:2026-05-10-multi
-              imagePullPolicy: Never      # DR-25 supply-chain: containerd-only image
+          # initContainer: Postgres readiness gate (per Ops Phase A finding —
+          # job was racing against postgres-0 cold-start on the 22:00 fire).
+          initContainers:
+            - name: wait-for-postgres
+              image: postgres:15-alpine
+              imagePullPolicy: IfNotPresent
               envFrom:
                 - secretRef:
                     name: pg-creds
@@ -80,20 +101,56 @@ spec:
                   value: "postgres"
                 - name: POSTGRES_PORT
                   value: "5432"
-                - name: OLLAMA_BASE_URL
-                  value: "http://ollama.ollamaserver-shared.svc.cluster.local:11434"
-                - name: OLLAMA_MODEL
-                  value: "gemma4:e4b"
-                - name: OLLAMA_TIMEOUT_SEC
-                  value: "60"
+              command:
+                - sh
+                - -c
+                - |
+                  echo "init: waiting for Postgres at $POSTGRES_HOST:$POSTGRES_PORT"
+                  i=0
+                  until pg_isready -h "$POSTGRES_HOST" -p "$POSTGRES_PORT" -U "${POSTGRES_USER:-intelpolitics_app}" -d "${POSTGRES_DB:-intelpolitics_db}" -t 5; do
+                    i=$((i + 1))
+                    if [ "$i" -ge 60 ]; then
+                      echo "init: postgres still not ready after 60 attempts — aborting"
+                      exit 1
+                    fi
+                    echo "init: postgres not ready (attempt $i); sleeping 5s"
+                    sleep 5
+                  done
+                  echo "init: postgres ready"
+              resources:
+                requests:
+                  memory: "32Mi"
+                  cpu: "50m"
+                limits:
+                  memory: "128Mi"
+                  cpu: "200m"
+          containers:
+            - name: scrape
+              image: intelpolitics-scraper:2026-05-12-phase-c
+              imagePullPolicy: Never      # DR-25 supply-chain: containerd-only image
+              command: ["python", "-m", "src.pipelines.phase_c_starmer"]
+              args:
+                - "--sources-v2"
+                - "/app/sources.v2.yaml"
+                - "--metrics-csv"
+                - "/tmp/phase-c-metrics.csv"
+              envFrom:
+                - secretRef:
+                    name: pg-creds
+              env:
+                - name: POSTGRES_HOST
+                  value: "postgres"
+                - name: POSTGRES_PORT
+                  value: "5432"
+                - name: POSTGRES_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: pg-creds
+                      key: url
+                - name: PIPELINE_PHASE
+                  value: "C"
                 - name: PIPELINE_MODE
-                  value: "multi"
-                - name: POLITICIANS
-                  value: "starmer,vance,meloni,merz,von-der-leyen"
-                - name: PIPELINE_METRICS_CSV
-                  value: "/tmp/metrics.csv"
-                - name: PACE_SEC
-                  value: "3.0"
+                  value: "starmer-t1"
                 - name: LOG_LEVEL
                   value: "INFO"
               resources:
