@@ -290,6 +290,27 @@ def run_starmer_phase_c(
                     "fatal_error": metrics.fatal_error,
                 })
 
+                # Durable per-strategy METRICS line. `kubectl logs` reads this
+                # from the cluster log store, which survives pod GC (unlike the
+                # EmptyDir CSV at /tmp/phase-c-metrics.csv). The "METRICS:"
+                # prefix is the grep anchor for post-hoc verification:
+                #   kubectl logs job/<name> | grep '^METRICS:' \
+                #     | sed 's/^METRICS: //' | jq -s 'map(.rows_inserted) | add'
+                # See Vadim's Inbox/builder-cronjob-metrics-durability-2026-05-13/.
+                metrics_line = {
+                    "strategy": src.id,
+                    "rows_inserted": metrics.rows_inserted,
+                    "rows_skipped_dedup": metrics.rows_duplicate,
+                    "errors": metrics.rows_rejected + (1 if metrics.fatal_error else 0),
+                    "duration_ms": int(metrics.duration_sec * 1000),
+                    "rows_yielded": metrics.rows_yielded,
+                    "fatal_error": metrics.fatal_error,
+                }
+                print(
+                    "METRICS: " + json.dumps(metrics_line, sort_keys=True, default=str),
+                    flush=True,
+                )
+
     # Step 4 — metrics CSV.
     metrics_csv_path.parent.mkdir(parents=True, exist_ok=True)
     if summary["strategies"]:

@@ -21,7 +21,7 @@
 
 set -euo pipefail
 
-IMAGE_TAG="intelpolitics-scraper:2026-05-12-phase-c"
+IMAGE_TAG="intelpolitics-scraper:2026-05-13-phase-c-metrics"
 BUILD_DIR="/tmp/intelpolitics-build"
 # Path to venture repo on Olares — adjust if the repo is cloned elsewhere.
 REPO_ROOT="${REPO_ROOT:-/root/00_FOUNDATION/ventures/intelpolitics}"

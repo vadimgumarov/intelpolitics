@@ -22,7 +22,7 @@
 # Pre-reqs (verified 2026-05-12):
 #   - intelpolitics-conductor namespace exists.
 #   - pg-creds secret + postgres service present.
-#   - Image intelpolitics-scraper:2026-05-12-phase-c built (Ops to build).
+#   - Image intelpolitics-scraper:2026-05-13-phase-c-metrics built (Ops to build).
 #   - Migration 002_sources_v2.sql applied (Builder to coordinate with Ops).
 #
 # DR-24 dry-run gate:
@@ -126,7 +126,7 @@ spec:
                   cpu: "200m"
           containers:
             - name: scrape
-              image: intelpolitics-scraper:2026-05-12-phase-c
+              image: intelpolitics-scraper:2026-05-13-phase-c-metrics
               imagePullPolicy: Never      # DR-25 supply-chain: containerd-only image
               command: ["python", "-m", "src.pipelines.phase_c_starmer"]
               args:

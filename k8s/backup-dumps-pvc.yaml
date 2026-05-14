@@ -1,0 +1,34 @@
+# ventures/intelpolitics/k8s/backup-dumps-pvc.yaml
+#
+# PersistentVolumeClaim: backup-dumps
+# Namespace: intelpolitics-conductor
+#
+# Used by the postgres-backup-nightly CronJob to store pg_dump files.
+# Capacity: 5Gi — covers 14 x ~300MB custom-format dumps with headroom.
+#   (intelpolitics_db is expected to stay well under 300MB for the
+#   foreseeable Phase C/D horizon; revisit if schema grows beyond 1GB raw.)
+#
+# StorageClass: local (OpenEBS local-hostpath, the cluster default).
+# Access mode: ReadWriteOnce — only one backup pod runs at a time (ConcurrencyPolicy: Forbid).
+#
+# Apply:
+#   kubectl apply -f backup-dumps-pvc.yaml -n intelpolitics-conductor
+# Verify:
+#   kubectl get pvc backup-dumps -n intelpolitics-conductor
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: backup-dumps
+  namespace: intelpolitics-conductor
+  labels:
+    app.kubernetes.io/name: postgres-backup-nightly
+    app.kubernetes.io/component: backup
+    app.kubernetes.io/part-of: intelpolitics
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local
+  resources:
+    requests:
+      storage: 5Gi

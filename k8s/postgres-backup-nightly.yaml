@@ -1,0 +1,226 @@
+# ventures/intelpolitics/k8s/postgres-backup-nightly.yaml
+#
+# CronJob: nightly pg_dump of intelpolitics_db to local PVC.
+#
+# Schedule: 01:00 America/Los_Angeles (PDT/PST) — offset 3h after the
+# Phase C scrape (22:00 PDT) so the dump captures that night's rows.
+# k3s 1.33 supports spec.timeZone natively.
+#
+# Storage:
+#   Writes to PVC `backup-dumps` in intelpolitics-conductor (see backup-dumps-pvc.yaml).
+#   Dump path inside pod: /backups/intelpolitics_db-YYYY-MM-DD.dump
+#   Retention: last 14 dumps kept; older files removed in the same shell step.
+#
+# Seafile integration (PENDING — see gating note below):
+#   SeaDav upload is commented out. To enable, Vadim must:
+#   1. Add a NetworkPolicy egress rule allowing TCP 80 to sync-hub namespace.
+#   2. Create secret `seafile-backup-creds` in intelpolitics-conductor with
+#      keys: SEAFILE_URL, SEAFILE_USER, SEAFILE_PASSWORD, SEAFILE_LIBRARY_ID.
+#      SEAFILE_URL = http://seafile.sync-hub.svc.cluster.local:8000
+#      Then uncomment the curl upload block in the command below.
+#
+# Connection:
+#   Auth from `pg-creds` secret (same as scraper). Env vars used:
+#     POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB, POSTGRES_HOST, POSTGRES_PORT.
+#
+# Image: postgres:16-alpine — matches the postgres-0 pod running on cluster.
+#
+# Failure handling:
+#   ttlSecondsAfterFinished: 604800  (7 days, matches scraper pattern)
+#   concurrencyPolicy: Forbid        (never run two backups simultaneously)
+#   successfulJobsHistoryLimit: 7
+#   failedJobsHistoryLimit: 3
+#   backoffLimit: 2                  (pg_dump is fast; 2 retries is enough)
+#
+# DR-24 dry-run gate:
+#   kubectl apply -f postgres-backup-nightly.yaml -n intelpolitics-conductor --dry-run=server
+# Live apply:
+#   kubectl apply -f postgres-backup-nightly.yaml -n intelpolitics-conductor
+# Manual smoke run:
+#   kubectl create job --from=cronjob/postgres-backup-nightly \
+#     postgres-backup-smoke -n intelpolitics-conductor
+# Observe:
+#   kubectl get jobs -n intelpolitics-conductor
+#   kubectl logs -f job/postgres-backup-smoke -n intelpolitics-conductor
+# Verify dump header (restorable check — no actual restore):
+#   kubectl run pg-restore-check --image=postgres:16-alpine --rm -it \
+#     --restart=Never -n intelpolitics-conductor \
+#     --overrides='{"spec":{"volumes":[{"name":"backups","persistentVolumeClaim":{"claimName":"backup-dumps"}}],"containers":[{"name":"pg-restore-check","image":"postgres:16-alpine","command":["sh","-c","ls -lh /backups/ && pg_restore --list /backups/$(ls /backups/ | tail -1)"],"volumeMounts":[{"mountPath":"/backups","name":"backups"}]}]}}'
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup-nightly
+  namespace: intelpolitics-conductor
+  labels:
+    app.kubernetes.io/name: postgres-backup-nightly
+    app.kubernetes.io/component: backup
+    app.kubernetes.io/part-of: intelpolitics
+spec:
+  # 01:00 PDT every day — 3h after Phase C scrape (22:00 PDT).
+  # PDT = UTC-7, so this fires at 08:00 UTC.
+  schedule: "0 1 * * *"
+  timeZone: "America/Los_Angeles"
+  # If the cluster is down at 01:00 PDT, still run within 6h.
+  startingDeadlineSeconds: 21600
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 7
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    metadata:
+      labels:
+        app.kubernetes.io/name: postgres-backup-nightly
+        app.kubernetes.io/component: backup
+        app.kubernetes.io/part-of: intelpolitics
+    spec:
+      backoffLimit: 2
+      ttlSecondsAfterFinished: 604800
+      completions: 1
+      parallelism: 1
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: postgres-backup-nightly
+            app.kubernetes.io/component: backup
+            app.kubernetes.io/part-of: intelpolitics
+        spec:
+          restartPolicy: OnFailure
+          # initContainer: wait for postgres-0 reachability before dumping.
+          # Mirrors the scraper's initContainer — same readiness pattern.
+          initContainers:
+            - name: wait-for-postgres
+              image: postgres:16-alpine
+              imagePullPolicy: IfNotPresent
+              envFrom:
+                - secretRef:
+                    name: pg-creds
+              env:
+                - name: POSTGRES_HOST
+                  value: "postgres"
+                - name: POSTGRES_PORT
+                  value: "5432"
+              command:
+                - sh
+                - -c
+                - |
+                  echo "init: waiting for Postgres at ${POSTGRES_HOST}:${POSTGRES_PORT}"
+                  i=0
+                  until pg_isready -h "${POSTGRES_HOST}" -p "${POSTGRES_PORT}" \
+                      -U "${POSTGRES_USER:-intelpolitics_app}" \
+                      -d "${POSTGRES_DB:-intelpolitics_db}" -t 5; do
+                    i=$((i + 1))
+                    if [ "$i" -ge 60 ]; then
+                      echo "init: postgres still not ready after 60 attempts — aborting"
+                      exit 1
+                    fi
+                    echo "init: postgres not ready (attempt $i); sleeping 5s"
+                    sleep 5
+                  done
+                  echo "init: postgres ready"
+              resources:
+                requests:
+                  memory: "32Mi"
+                  cpu: "50m"
+                limits:
+                  memory: "128Mi"
+                  cpu: "200m"
+          containers:
+            - name: pg-dump
+              image: postgres:16-alpine
+              imagePullPolicy: IfNotPresent
+              envFrom:
+                - secretRef:
+                    name: pg-creds
+              env:
+                - name: POSTGRES_HOST
+                  value: "postgres"
+                - name: POSTGRES_PORT
+                  value: "5432"
+                # PGPASSWORD is what pg_dump reads for non-interactive auth.
+                # pg-creds exposes POSTGRES_PASSWORD; alias it here.
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: pg-creds
+                      key: POSTGRES_PASSWORD
+              command:
+                - sh
+                - -c
+                - |
+                  set -e
+
+                  DB="${POSTGRES_DB:-intelpolitics_db}"
+                  HOST="${POSTGRES_HOST:-postgres}"
+                  PORT="${POSTGRES_PORT:-5432}"
+                  USER="${POSTGRES_USER:-intelpolitics_app}"
+                  DUMP_DIR="/backups"
+                  DATE=$(date +%Y-%m-%d)
+                  DUMP_FILE="${DUMP_DIR}/intelpolitics_db-${DATE}.dump"
+                  KEEP=14
+
+                  echo "backup: dumping ${DB} on ${HOST}:${PORT} as ${USER}"
+                  pg_dump \
+                    --host="${HOST}" \
+                    --port="${PORT}" \
+                    --username="${USER}" \
+                    --dbname="${DB}" \
+                    --no-owner \
+                    --no-privileges \
+                    --format=custom \
+                    --file="${DUMP_FILE}"
+
+                  echo "backup: dump written to ${DUMP_FILE}"
+                  ls -lh "${DUMP_FILE}"
+
+                  # Retention: keep last $KEEP dumps, delete older ones.
+                  # `ls -t` sorts newest-first; tail skips the keepers.
+                  cd "${DUMP_DIR}"
+                  TOTAL=$(ls -1 intelpolitics_db-*.dump 2>/dev/null | wc -l)
+                  if [ "${TOTAL}" -gt "${KEEP}" ]; then
+                    ls -t1 intelpolitics_db-*.dump | tail -n "+$((KEEP + 1))" | while IFS= read -r f; do
+                      echo "backup: removing old dump ${f}"
+                      rm -f "${f}"
+                    done
+                  fi
+
+                  echo "backup: retention complete; ${DUMP_DIR} contents:"
+                  ls -lh "${DUMP_DIR}"
+
+                  # ── SEAFILE UPLOAD (PENDING — uncomment after prerequisites met) ──
+                  # Prerequisites:
+                  #   1. NetworkPolicy egress rule for TCP 80 to sync-hub namespace.
+                  #   2. Secret seafile-backup-creds in intelpolitics-conductor with:
+                  #      SEAFILE_URL (http://seafile.sync-hub.svc.cluster.local:8000)
+                  #      SEAFILE_USER, SEAFILE_PASSWORD, SEAFILE_LIBRARY_ID
+                  #
+                  # SEAFILE_TOKEN=$(curl -s -X POST \
+                  #   "${SEAFILE_URL}/api2/auth-token/" \
+                  #   -d "username=${SEAFILE_USER}&password=${SEAFILE_PASSWORD}" \
+                  #   | sed 's/.*"token":"\([^"]*\)".*/\1/')
+                  # curl -s -X POST \
+                  #   "${SEAFILE_URL}/api2/repos/${SEAFILE_LIBRARY_ID}/upload-link/" \
+                  #   -H "Authorization: Token ${SEAFILE_TOKEN}" \
+                  #   | sed 's/"//g' | xargs -I UPLOAD_URL curl -s \
+                  #   -H "Authorization: Token ${SEAFILE_TOKEN}" \
+                  #   -F "file=@${DUMP_FILE}" \
+                  #   -F "filename=intelpolitics_db-${DATE}.dump" \
+                  #   -F "parent_dir=/backups/" \
+                  #   "UPLOAD_URL"
+                  # echo "backup: seafile upload complete"
+
+                  echo "backup: done"
+              resources:
+                # IO-bound, not CPU-bound. Small limits.
+                requests:
+                  memory: "64Mi"
+                  cpu: "50m"
+                limits:
+                  memory: "256Mi"
+                  cpu: "200m"
+              volumeMounts:
+                - name: backups
+                  mountPath: /backups
+          volumes:
+            - name: backups
+              persistentVolumeClaim:
+                claimName: backup-dumps
